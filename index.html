@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Парфюм Логистик — Экосистема склада</title>
+<!-- Подключаем Telegram SDK -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Подключаем сканер штрих-кодов -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --red: #C8272E; --red-dark: #a01f25; --red-light: #e8353d;
+    --dark: #1a1a1a; --dark2: #242424; --dark3: #2e2e2e;
+    --card: #2a2a2a; --border: #3a3a3a; --text: #f0f0f0;
+    --text-muted: #888; --text-dim: #bbb;
+    --green: #2ecc71; --orange: #f39c12; --blue: #3498db; --yellow: #f1c40f;
+    --radius: 14px; --radius-sm: 8px;
+  }
+
+  body.light-theme {
+    --dark: #f0f2f5; --dark2: #ffffff; --dark3: #e4e6eb;
+    --card: #ffffff; --border: #d0d4dc; --text: #1a1a1a;
+    --text-muted: #65676b; --text-dim: #8a8d91;
+  }
+
+  body, .header, .bottom-nav, .menu-card, .auth-method-btn, .auth-input-group, 
+  .tsd-stat, .tsd-item, .photo-slot, .fault-type-btn, .textarea-field, 
+  .doc-item, .zone-chip, .revisor-item, .shift-card, .zone-card, .notify-item {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Rubik', sans-serif; background: var(--dark); color: var(--text);
+    min-height: 100vh; overflow-x: hidden; max-width: 480px; margin: 0 auto; position: relative;
+  }
+
+  /* HEADER */
+  .header { background: var(--dark2); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .back-btn { display: none; width: 32px; height: 32px; background: var(--dark3); border: none; border-radius: 50%; color: var(--text); font-size: 18px; cursor: pointer; align-items: center; justify-content: center; }
+  .back-btn.visible { display: flex; }
+  .logo-svg { width: 42px; height: 34px; flex-shrink: 0; }
+  .header-title { display: flex; flex-direction: column; line-height: 1.2; }
+  .header-title .brand { font-size: 13px; font-weight: 700; color: var(--text); }
+  .header-title .sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  
+  .theme-toggle { width: 32px; height: 32px; background: transparent; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
+  
+  .user-badge { background: var(--dark3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
+  .user-badge .avatar { width: 22px; height: 22px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+
+  /* SCREENS */
+  .screen { display: none; padding: 0 0 80px; animation: fadeIn 0.2s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* AUTH */
+  .auth-screen { min-height: calc(100vh - 57px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; }
+  .auth-logo-big { margin-bottom: 32px; text-align: center; }
+  .auth-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+  .auth-sub { font-size: 14px; color: var(--text-muted); text-align: center; margin-bottom: 36px; line-height: 1.5; }
+  .auth-methods { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .auth-method-btn { width: 100%; padding: 16px 20px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 14px; text-align: left; }
+  .auth-method-btn .icon { width: 44px; height: 44px; background: var(--red); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .auth-method-btn .icon.blue { background: var(--blue); }
+  .auth-input-group { display: none; width: 100%; flex-direction: column; gap: 10px; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+  .auth-input-group.show { display: flex; }
+  .auth-input-group input { background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--text); font-size: 16px; font-weight: 600; text-transform: uppercase; width: 100%; outline: none;}
+
+  .btn-primary { width: 100%; padding: 15px; background: var(--red); border: none; border-radius: var(--radius); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+  /* HOME */
+  .welcome-banner { margin: 16px; padding: 16px; background: linear-gradient(135deg, var(--red-dark), var(--red)); border-radius: var(--radius); display: flex; align-items: center; gap: 14px; }
+  .welcome-banner .w-avatar { width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .section-label { padding: 16px 16px 8px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  
+  .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+  .menu-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 14px 16px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+  .menu-card.wide { grid-column: span 2; flex-direction: row; align-items: center; padding: 16px; }
+  .menu-card .card-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .card-icon.red { background: rgba(200, 39, 46, 0.2); }
+  .card-icon.blue { background: rgba(52, 152, 219, 0.2); }
+  .card-icon.green { background: rgba(46, 204, 113, 0.2); }
+  .card-icon.orange { background: rgba(243, 156, 18, 0.2); }
+  .card-icon.purple { background: rgba(155, 89, 182, 0.2); }
+  .card-icon.teal { background: rgba(26, 188, 156, 0.2); }
+  .menu-card .card-title { font-size: 14px; font-weight: 600; }
+  .menu-card .card-desc { font-size: 12px; color: var(--text-muted); }
+
+  /* FORMS & INPUTS */
+  .page-title { padding: 16px 16px 4px; font-size: 20px; font-weight: 700; }
+  .page-subtitle { padding: 0 16px 16px; font-size: 13px; color: var(--text-muted); }
+  .form-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; display: block; }
+  .form-input, .textarea-field { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--text); font-size: 15px; margin-bottom: 12px; outline: none; }
+  .textarea-field { min-height: 90px; resize: none; width: calc(100% - 32px); margin: 0 16px 12px; }
+  
+  .condition-pills { display: flex; gap: 8px; margin-bottom: 16px; }
+  .cpill { flex: 1; padding: 10px 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center; font-size: 12px; cursor: pointer; }
+  .cpill.ok.selected { background: rgba(46,204,113,0.2); border-color: var(--green); color: var(--green); }
+  .cpill.warn.selected { background: rgba(243,156,18,0.2); border-color: var(--orange); color: var(--orange); }
+  .cpill.bad.selected { background: rgba(200,39,46,0.2); border-color: var(--red-light); color: var(--red-light); }
+
+  .fault-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
+  .fault-type-btn { padding: 18px 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: center; }
+  .fault-type-btn.selected { border-color: var(--red); background: rgba(200,39,46,0.1); }
+  
+  .shift-toggle-row { display: flex; gap: 8px; padding: 0 16px 16px; }
+  .shift-toggle-btn { flex: 1; padding: 14px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; }
+  .shift-toggle-btn.start { background: var(--green); color: #fff; }
+  .shift-toggle-btn.end { background: var(--dark3); color: var(--text); border: 1px solid var(--border); }
+
+  /* SCANNER OVERLAY */
+  .scanner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .scanner-overlay.show { display: flex; }
+  #qr-reader { width: 100%; max-width: 400px; border-radius: 12px; overflow: hidden; background: #000; }
+  .scanner-close { margin-top: 20px; padding: 12px 32px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <div class="logo-area">
+      <svg class="logo-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="8,32 18,8 28,8 18,32" fill="var(--text)"/>
+        <polygon points="18,8 42,8 37,15 13,15" fill="var(--text)"/>
+        <polygon points="32,8 22,32 32,32 42,8" fill="var(--text)"/>
+        <polygon points="40,8 58,23 48,32 32,18" fill="var(--red)"/>
+      </svg>
+      <div class="header-title" id="headerTitle">
+        <span class="brand">Экосистема склада</span>
+        <span class="sub">Парфюм Логистик</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">☀️</button>
+    <div class="user-badge" id="userBadge" style="display:none">
+      <div class="avatar" id="ubAvatar">ИП</div>
+      <span id="ubName">Иванов П.</span>
+    </div>
+  </div>
+</div>
+
+<!-- АВТОРИЗАЦИЯ -->
+<div class="screen active" id="screen-auth">
+  <div class="auth-screen">
+    <div class="auth-logo-big">
+      <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" style="width: 110px; height: 90px;">
+        <polygon points="28,52 38,28 48,28 38,52" fill="var(--text)"/>
+        <polygon points="38,28 62,28 57,35 33,35" fill="var(--text)"/>
+        <polygon points="52,28 42,52 52,52 62,28" fill="var(--text)"/>
+        <polygon points="60,28 78,43 68,52 52,38" fill="var(--red)"/>
+        <text x="60" y="75" font-family="'Rubik', sans-serif" font-size="15" font-weight="700" fill="var(--text)" text-anchor="middle">ПАРФЮМ</text>
+        <text x="60" y="94" font-family="'Rubik', sans-serif" font-size="15" font-weight="700" fill="var(--red)" text-anchor="middle">ЛОГИСТИК</text>
+      </svg>
+    </div>
+    <div class="auth-title">Добро пожаловать</div>
+    <div class="auth-sub">Для доступа к системе<br>выполните регистрацию</div>
+
+    <div class="auth-methods">
+      <button class="auth-method-btn" onclick="startScanner()">
+        <div class="icon">📷</div>
+        <div>
+          <div>Сканировать бейдж</div>
+          <div class="desc">Code128 · штрих-код WMS</div>
+        </div>
+      </button>
+      <button class="auth-method-btn" onclick="document.getElementById('manualInputGroup').classList.toggle('show')">
+        <div class="icon blue">⌨️</div>
+        <div>
+          <div>Ввести логин WMS</div>
+          <div class="desc">Латинские заглавные символы</div>
+        </div>
+      </button>
+      <div class="auth-input-group" id="manualInputGroup">
+        <label>Введите WMS-логин</label>
+        <input type="text" id="wmsInput" placeholder="IVANOV_PS" maxlength="20">
+        <button class="btn-primary" onclick="sendAuth()">Войти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div class="screen" id="screen-home">
+  <div class="welcome-banner">
+    <div class="w-avatar">👤</div>
+    <div>
+      <div class="w-name" id="homeName">Иванов Пётр</div>
+      <div class="w-zone" id="homeZone">Зона отбора</div>
+      <div class="w-shift">Смена отслеживается автоматически</div>
+    </div>
+  </div>
+
+  <div class="section-label">Основные функции</div>
+  <div class="menu-grid">
+    <div class="menu-card" onclick="navTo('screen-tsd-take')">
+      <div class="card-icon red">📥</div>
+      <div class="card-title">Взять ТСД</div>
+      <div class="card-desc">Начать работу с терминалом</div>
+    </div>
+    <div class="menu-card" onclick="navTo('screen-tsd-give')">
+      <div class="card-icon dark">📤</div>
+      <div class="card-title">Сдать ТСД</div>
+      <div class="card-desc">Вернуть терминал</div>
+    </div>
+    <div class="menu-card" onclick="navTo('screen-revisor-new')">
+      <div class="card-icon orange">🔍</div>
+      <div class="card-title">Ревизорам</div>
+      <div class="card-desc">Сообщить о пересорте</div>
+    </div>
+    <div class="menu-card" onclick="navTo('screen-fault')">
+      <div class="card-icon blue">🔧</div>
+      <div class="card-title">Неисправность</div>
+      <div class="card-desc">Стеллаж, тележка, техника</div>
+    </div>
+    <div class="menu-card wide" onclick="navTo('screen-suggestion')">
+      <div class="card-icon yellow">💡</div>
+      <div class="card-text">
+        <div class="card-title">Журнал предложений</div>
+        <div class="card-desc">Есть идея по улучшению склада? Напишите нам!</div>
+      </div>
+    </div>
+    
+    <!-- Карточка управления сменой (скрыта по умолчанию) -->
+    <div class="menu-card wide" id="shiftCard" onclick="navTo('screen-shift')" style="display: none;">
+      <div class="card-icon purple">👥</div>
+      <div class="card-text">
+        <div class="card-title">Управление сменой <span class="mock-tag" id="roleTag">СТАРШИЙ</span></div>
+        <div class="card-desc">Открытие смены · Статистика</div>
+      </div>
+      <div class="card-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- ВЗЯТЬ ТСД -->
+<div class="screen" id="screen-tsd-take">
+  <div class="page-title">Взять ТСД</div>
+  <div class="page-subtitle">Укажите номер терминала</div>
+  <div class="tsd-take-form">
+    <label class="form-label">Инвентарный номер ТСД</label>
+    <input class="form-input" type="number" placeholder="Например: 45" id="tsdNumInput">
+    <label class="form-label">Состояние при выдаче</label>
+    <div class="condition-pills" id="tsdTakeCond">
+      <div class="cpill ok selected" data-val="ok" onclick="selectPill(this)">✅ Исправен</div>
+      <div class="cpill warn" data-val="warn" onclick="selectPill(this)">⚠️ Сбои</div>
+      <div class="cpill bad" data-val="bad" onclick="selectPill(this)">❌ Не работает</div>
+    </div>
+  </div>
+  <div style="padding: 16px">
+    <button class="btn-primary" onclick="sendTsdTake()">Подтвердить взятие</button>
+  </div>
+</div>
+
+<!-- СДАТЬ ТСД -->
+<div class="screen" id="screen-tsd-give">
+  <div class="page-title">Сдать ТСД</div>
+  <div class="page-subtitle">Зарегистрируйте возврат</div>
+  <div class="tsd-take-form">
+    <label class="form-label">Состояние при сдаче</label>
+    <div class="condition-pills" id="tsdGiveCond">
+      <div class="cpill ok selected" data-val="ok" onclick="selectPill(this)">✅ Исправен</div>
+      <div class="cpill warn" data-val="warn" onclick="selectPill(this)">⚠️ Сбои</div>
+      <div class="cpill bad" data-val="bad" onclick="selectPill(this)">❌ Не работает</div>
+    </div>
+  </div>
+  <div style="padding: 16px">
+    <button class="btn-primary" onclick="sendTsdGive()">Подтвердить сдачу</button>
+  </div>
+</div>
+
+<!-- НЕИСПРАВНОСТЬ -->
+<div class="screen" id="screen-fault">
+  <div class="page-title">Неисправность</div>
+  <div class="page-subtitle">Сообщить об оборудовании</div>
+  <div class="fault-type-grid" id="faultType">
+    <div class="fault-type-btn selected" data-val="Стеллаж" onclick="selectFault(this)">
+      <div class="ft-ico">🏗️</div><div class="ft-lbl">Стеллаж</div>
+    </div>
+    <div class="fault-type-btn" data-val="Тележка" onclick="selectFault(this)">
+      <div class="ft-ico">🛒</div><div class="ft-lbl">Тележка</div>
+    </div>
+    <div class="fault-type-btn" data-val="Электро" onclick="selectFault(this)">
+      <div class="ft-ico">⚡</div><div class="ft-lbl">Электро</div>
+    </div>
+    <div class="fault-type-btn" data-val="Прочее" onclick="selectFault(this)">
+      <div class="ft-ico">📦</div><div class="ft-lbl">Прочее</div>
+    </div>
+  </div>
+  <textarea class="textarea-field" id="faultDesc" placeholder="Опишите проблему: ряд/секция, характер повреждения..."></textarea>
+  <div style="padding: 16px">
+    <button class="btn-primary" onclick="sendFault()">Отправить сообщение</button>
+  </div>
+</div>
+
+<!-- РЕВИЗОРАМ -->
+<div class="screen" id="screen-revisor-new">
+  <div class="page-title">Сообщить ревизорам</div>
+  <div class="page-subtitle">Опишите пересорт в ячейке</div>
+  <div class="tsd-take-form">
+    <label class="form-label">Номер ячейки</label>
+    <input class="form-input" type="text" id="revCell" placeholder="Например: B-042-03">
+    <label class="form-label">Описание ситуации</label>
+  </div>
+  <textarea class="textarea-field" id="revDesc" placeholder="Артикул в ячейке, что ожидалось, что нашли..."></textarea>
+  <div style="padding: 16px">
+    <button class="btn-primary" onclick="sendRevisor()">Отправить ревизорам</button>
+  </div>
+</div>
+
+<!-- ПРЕДЛОЖЕНИЯ -->
+<div class="screen" id="screen-suggestion">
+  <div class="page-title">Журнал предложений</div>
+  <div class="page-subtitle">Идеи по улучшению работы</div>
+  <textarea class="textarea-field" id="sugDesc" placeholder="Опишите вашу идею или предложение максимально подробно..."></textarea>
+  <div style="padding: 16px">
+    <button class="btn-primary" onclick="sendSuggestion()">Отправить руководству</button>
+  </div>
+</div>
+
+<!-- УПРАВЛЕНИЕ СМЕНОЙ -->
+<div class="screen" id="screen-shift">
+  <div class="page-title">Управление сменой</div>
+  <div class="page-subtitle">Регистрация времени работы</div>
+  <div class="shift-toggle-row">
+    <button class="shift-toggle-btn start" onclick="sendCheckin('day')">▶ Открыть смену (12ч)</button>
+  </div>
+  <div class="shift-toggle-row">
+    <button class="shift-toggle-btn" style="background: var(--blue); color: #fff" onclick="sendCheckin('middle')">🕗 Средняя смена (8ч)</button>
+  </div>
+  <div class="shift-toggle-row">
+    <button class="shift-toggle-btn end" onclick="sendCheckout()">■ Завершить смену</button>
+  </div>
+</div>
+
+
+<!-- СКАНЕР -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div style="color: #fff; font-size: 14px; margin-bottom: 20px;">Наведите камеру на штрих-код бейджа</div>
+  <div id="qr-reader"></div>
+  <button class="scanner-close" onclick="closeScanner()">Отмена</button>
+</div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand(); // Открываем на весь экран
+
+  let currentScreen = 'screen-auth';
+  let screenHistory = [];
+  let html5QrcodeScanner;
+
+  // Инициализация при запуске
+  window.addEventListener('DOMContentLoaded', () => {
+    // 1. Тема
+    const savedTheme = localStorage.getItem('app-theme') || (tg.colorScheme === 'light' ? 'light' : 'dark');
+    if (savedTheme === 'light') document.body.classList.add('light-theme');
+    updateThemeIcon(savedTheme === 'light');
+
+    // 2. Читаем параметры из ссылки (URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    const role = urlParams.get('role');
+    const wms = urlParams.get('wms');
+    const zone = urlParams.get('zone');
+    const name = urlParams.get('name');
+
+    // 3. Логика авторизации
+    if (role && role !== 'none') {
+      // Пользователь уже найден в БД Питон-ботом!
+      document.getElementById('homeName').textContent = name;
+      document.getElementById('homeZone').textContent = zone;
+      
+      document.getElementById('ubAvatar').textContent = name.substring(0, 2).toUpperCase();
+      document.getElementById('ubName').textContent = name.split(' ')[0];
+      document.getElementById('userBadge').style.display = 'flex';
+
+      // Показываем меню старшего, если роль подходит
+      if (['senior', 'shift_manager', 'admin'].includes(role)) {
+        document.getElementById('shiftCard').style.display = 'flex';
+        document.getElementById('roleTag').textContent = role === 'admin' ? 'АДМИН' : (role === 'senior' ? 'СТАРШИЙ' : 'НАЧ.СМЕНЫ');
+      }
+      
+      navTo('screen-home');
+    } else {
+      // Пользователя нет, показываем экран логина
+      navTo('screen-auth');
+    }
+  });
+
+  // --- ОТПРАВКА ДАННЫХ В БОТ (ЗАКРЫВАЕТ ОКНО) ---
+  function sendDataToBot(action, payload) {
+    const data = { action: action, ...payload };
+    tg.sendData(JSON.stringify(data)); // Отправляет данные и закрывает Web App
+  }
+
+  // Функции для каждой кнопки
+  function sendAuth() {
+    const wms = document.getElementById('wmsInput').value.trim();
+    if(wms.length < 2) return alert("Введите корректный логин!");
+    sendDataToBot("login", { wms: wms });
+  }
+
+  function sendTsdTake() {
+    const num = document.getElementById('tsdNumInput').value;
+    if(!num) return alert("Укажите номер ТСД!");
+    const cond = document.querySelector('#tsdTakeCond .selected').dataset.val;
+    sendDataToBot("tsd_take", { tsd_number: num, condition: cond });
+  }
+
+  function sendTsdGive() {
+    const cond = document.querySelector('#tsdGiveCond .selected').dataset.val;
+    sendDataToBot("tsd_give", { condition: cond });
+  }
+
+  function sendFault() {
+    const type = document.querySelector('#faultType .selected').dataset.val;
+    const desc = document.getElementById('faultDesc').value.trim();
+    if(!desc) return alert("Опишите неисправность!");
+    sendDataToBot("fault", { fault_type: type, description: desc });
+  }
+
+  function sendRevisor() {
+    const cell = document.getElementById('revCell').value.trim();
+    const desc = document.getElementById('revDesc').value.trim();
+    if(!cell || !desc) return alert("Заполните оба поля!");
+    sendDataToBot("revisor", { cell: cell, description: desc });
+  }
+
+  function sendSuggestion() {
+    const text = document.getElementById('sugDesc').value.trim();
+    if(text.length < 10) return alert("Опишите идею подробнее (минимум 10 символов)");
+    sendDataToBot("suggestion", { text: text });
+  }
+
+  function sendCheckin(type) {
+    sendDataToBot("shift_checkin", { shift_type: type });
+  }
+
+  function sendCheckout() {
+    sendDataToBot("shift_checkout", {});
+  }
+
+
+  // --- СКАНЕР ШТРИХ-КОДОВ (Code128) ---
+  function startScanner() {
+    document.getElementById('scannerOverlay').classList.add('show');
+    
+    html5QrcodeScanner = new Html5Qrcode("qr-reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+
+    html5QrcodeScanner.start(
+      { facingMode: "environment" }, // задняя камера
+      config,
+      (decodedText) => {
+        // Успех!
+        closeScanner();
+        // Автоматически отправляем считанный код в бот как логин
+        sendDataToBot("login", { wms: decodedText });
+      },
+      (errorMessage) => { /* игнорируем ошибки чтения кадров */ }
+    ).catch(err => alert("Ошибка камеры: " + err));
+  }
+
+  function closeScanner() {
+    if (html5QrcodeScanner) html5QrcodeScanner.stop();
+    document.getElementById('scannerOverlay').classList.remove('show');
+  }
+
+
+  // --- UI И НАВИГАЦИЯ ---
+  function navTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    if (screenId !== currentScreen && screenId !== 'screen-auth' && screenId !== 'screen-home') {
+      screenHistory.push(currentScreen);
+      document.getElementById('backBtn').classList.add('visible');
+    } else {
+      document.getElementById('backBtn').classList.remove('visible');
+    }
+    currentScreen = screenId;
+    window.scrollTo(0, 0);
+  }
+
+  function goBack() {
+    if (screenHistory.length > 0) {
+      const prev = screenHistory.pop();
+      navTo(prev);
+      screenHistory.pop(); 
+    }
+  }
+
+  function selectFault(el) {
+    document.querySelectorAll('.fault-type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function selectPill(el) {
+    const parent = el.parentElement;
+    parent.querySelectorAll('.cpill').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    localStorage.setItem('app-theme', isLight ? 'light' : 'dark');
+    updateThemeIcon(isLight);
+  }
+
+  function updateThemeIcon(isLight) {
+    const btn = document.getElementById('themeToggleBtn');
+    if(btn) btn.innerHTML = isLight ? '🌙' : '☀️';
+  }
+</script>
+</body>
+</html>
