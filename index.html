@@ -119,7 +119,7 @@
   /* SCANNER OVERLAY */
   .scanner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
   .scanner-overlay.show { display: flex; }
-  #qr-reader { width: 100%; max-width: 400px; border-radius: 12px; overflow: hidden; background: #000; }
+  #qr-reader { width: 100%; max-width: 400px; min-height: 250px; border-radius: 12px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
   .scanner-close { margin-top: 20px; padding: 12px 32px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); color: #fff; cursor: pointer; }
 </style>
 </head>
@@ -423,48 +423,55 @@
     sendDataToBot("shift_checkout", {});
   }
 
+let html5QrcodeScanner = null;
 
   // --- СКАНЕР ШТРИХ-КОДОВ (Code128) ---
   function startScanner() {
     document.getElementById('scannerOverlay').classList.add('show');
     
-    // Инициализируем объект сканера
-    html5QrcodeScanner = new Html5Qrcode("qr-reader");
-    const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+    if (!html5QrcodeScanner) {
+        html5QrcodeScanner = new Html5Qrcode("qr-reader");
+    }
 
-    // Пытаемся запустить заднюю камеру
     html5QrcodeScanner.start(
-      { facingMode: "environment" }, 
-      config,
+      { facingMode: "environment" }, // Пытаемся открыть заднюю камеру
+      { fps: 10, qrbox: { width: 250, height: 100 } },
       (decodedText) => {
-        // Успех!
+        // Камера успешно прочитала штрих-код!
         closeScanner();
         
-        // Очищаем код от префикса 20
+        // Очищаем код от возможных спецсимволов и префиксов
         let cleanText = decodedText.trim().toUpperCase();
+        
+        // Если код начинается с "20", отрезаем эти первые два символа
         if (cleanText.startsWith("20")) {
             cleanText = cleanText.substring(2);
         }
+        
+        // Отправляем очищенный код боту
         sendDataToBot("login", { wms: cleanText });
       },
       (errorMessage) => { 
-        // Игнорируем пустые кадры 
+        // Игнорируем пустые кадры, пока штрих-код не пойман
       }
     ).catch(err => {
-      // Если камера не запустилась (нет HTTPS, нет задней камеры или нет прав)
+      // Если камера физически недоступна (например, вы открыли с ПК)
+      alert("⚠️ Ошибка доступа к камере. Проверьте разрешения.\nТех.детали: " + err);
       closeScanner();
-      alert("⚠️ Не удалось включить камеру.\n\nПричины:\n1. Нет прав на камеру в Telegram.\n2. Бот открыт не по ссылке HTTPS.\n3. Вы открыли бота с ПК (нет задней камеры).\n\nТех.ошибка: " + err);
     });
   }
 
   function closeScanner() {
-    // Правильно останавливаем и очищаем память сканера
-    if (html5QrcodeScanner) {
-      html5QrcodeScanner.stop().then(() => {
-          html5QrcodeScanner.clear();
-      }).catch(err => console.log("Сканер уже остановлен."));
-    }
     document.getElementById('scannerOverlay').classList.remove('show');
+    
+    // Безопасно выключаем камеру, чтобы она не висела в памяти телефона
+    try {
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+            html5QrcodeScanner.clear();
+        }).catch(err => console.log("Камера уже остановлена"));
+      }
+    } catch (e) {}
   }
 
 
