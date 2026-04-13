@@ -456,8 +456,17 @@
       (decodedText) => {
         // Успех!
         closeScanner();
-        // Автоматически отправляем считанный код в бот как логин
-        sendDataToBot("login", { wms: decodedText });
+        
+        // Очищаем код от возможных спецсимволов и префиксов
+        let cleanText = decodedText.trim().toUpperCase();
+        
+        // Если код начинается с "20", отрезаем эти первые два символа
+        if (cleanText.startsWith("20")) {
+            cleanText = cleanText.substring(2);
+        }
+        
+        // Автоматически отправляем очищенный код боту
+        sendDataToBot("login", { wms: cleanText });
       },
       (errorMessage) => { /* игнорируем ошибки чтения кадров */ }
     ).catch(err => alert("Ошибка камеры: " + err));
