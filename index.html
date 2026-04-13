@@ -117,10 +117,16 @@
   .shift-toggle-btn.end { background: var(--dark3); color: var(--text); border: 1px solid var(--border); }
 
   /* SCANNER OVERLAY */
-  .scanner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .scanner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
   .scanner-overlay.show { display: flex; }
-  #qr-reader { width: 100%; max-width: 400px; min-height: 250px; border-radius: 12px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; }
-  .scanner-close { margin-top: 20px; padding: 12px 32px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); color: #fff; cursor: pointer; }
+  
+  /* ЖЕСТКО ЗАДАЕМ РАЗМЕРЫ, ЧТОБЫ ТЕЛЕГРАМ НЕ СХЛОПНУЛ ЭКРАН */
+  #qr-reader { width: 100%; max-width: 400px; min-height: 300px; border-radius: 12px; overflow: hidden; background: #111; position: relative;}
+  
+  /* ЭТО ПРАВИЛО ЗАСТАВИТ ВИДЕО-ПОТОК ОТОБРАЖАТЬСЯ */
+  #qr-reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; position: absolute; top: 0; left: 0; }
+  
+  .scanner-close { margin-top: 24px; padding: 14px 32px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); color: #fff; font-weight: 600; cursor: pointer; z-index: 10;}
 </style>
 </head>
 <body>
