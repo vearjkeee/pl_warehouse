@@ -27,9 +27,8 @@
     --text-muted: #65676b; --text-dim: #8a8d91;
   }
 
-  body, .header, .bottom-nav, .menu-card, .auth-method-btn, .auth-input-group, 
-  .tsd-stat, .tsd-item, .photo-slot, .fault-type-btn, .textarea-field, 
-  .doc-item, .zone-chip, .revisor-item, .shift-card, .zone-card, .notify-item {
+  body, .header, .menu-card, .auth-method-btn, .auth-input-group, 
+  .cpill, .btn-primary, .textarea-field, .form-input {
     transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   }
 
@@ -50,9 +49,7 @@
   .header-title .brand { font-size: 13px; font-weight: 700; color: var(--text); }
   .header-title .sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
   .header-right { display: flex; align-items: center; gap: 8px; }
-  
   .theme-toggle { width: 32px; height: 32px; background: transparent; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
-  
   .user-badge { background: var(--dark3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px 4px 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
   .user-badge .avatar { width: 22px; height: 22px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
 
@@ -86,11 +83,11 @@
   .menu-card.wide { grid-column: span 2; flex-direction: row; align-items: center; padding: 16px; }
   .menu-card .card-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
   .card-icon.red { background: rgba(200, 39, 46, 0.2); }
-  .card-icon.blue { background: rgba(52, 152, 219, 0.2); }
-  .card-icon.green { background: rgba(46, 204, 113, 0.2); }
+  .card-icon.dark { background: var(--dark3); border: 1px solid var(--border); }
   .card-icon.orange { background: rgba(243, 156, 18, 0.2); }
+  .card-icon.blue { background: rgba(52, 152, 219, 0.2); }
+  .card-icon.yellow { background: rgba(241, 196, 15, 0.2); }
   .card-icon.purple { background: rgba(155, 89, 182, 0.2); }
-  .card-icon.teal { background: rgba(26, 188, 156, 0.2); }
   .menu-card .card-title { font-size: 14px; font-weight: 600; }
   .menu-card .card-desc { font-size: 12px; color: var(--text-muted); }
 
@@ -106,26 +103,13 @@
   .cpill.ok.selected { background: rgba(46,204,113,0.2); border-color: var(--green); color: var(--green); }
   .cpill.warn.selected { background: rgba(243,156,18,0.2); border-color: var(--orange); color: var(--orange); }
   .cpill.bad.selected { background: rgba(200,39,46,0.2); border-color: var(--red-light); color: var(--red-light); }
-
-  .fault-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px; }
-  .fault-type-btn { padding: 18px 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: center; }
-  .fault-type-btn.selected { border-color: var(--red); background: rgba(200,39,46,0.1); }
-  
-  .shift-toggle-row { display: flex; gap: 8px; padding: 0 16px 16px; }
-  .shift-toggle-btn { flex: 1; padding: 14px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; }
-  .shift-toggle-btn.start { background: var(--green); color: #fff; }
-  .shift-toggle-btn.end { background: var(--dark3); color: var(--text); border: 1px solid var(--border); }
+  .info-row { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(52,152,219,0.1); border-left: 3px solid var(--blue); margin: 0 16px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 12px; color: var(--text-dim); line-height: 1.4; }
 
   /* SCANNER OVERLAY */
   .scanner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
   .scanner-overlay.show { display: flex; }
-  
-  /* ЖЕСТКО ЗАДАЕМ РАЗМЕРЫ, ЧТОБЫ ТЕЛЕГРАМ НЕ СХЛОПНУЛ ЭКРАН */
   #qr-reader { width: 100%; max-width: 400px; min-height: 300px; border-radius: 12px; overflow: hidden; background: #111; position: relative;}
-  
-  /* ЭТО ПРАВИЛО ЗАСТАВИТ ВИДЕО-ПОТОК ОТОБРАЖАТЬСЯ */
   #qr-reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; position: absolute; top: 0; left: 0; }
-  
   .scanner-close { margin-top: 24px; padding: 14px 32px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); color: #fff; font-weight: 600; cursor: pointer; z-index: 10;}
 </style>
 </head>
@@ -238,7 +222,7 @@
       </div>
     </div>
     
-<!-- Статистика склада (скрыта по умолчанию) -->
+    <!-- Статистика склада (скрыта по умолчанию) -->
     <div class="menu-card wide" id="shiftCard" onclick="sendDataToBot('shift_stats', {})" style="display: none;">
       <div class="card-icon purple">📊</div>
       <div class="card-text">
@@ -246,12 +230,14 @@
         <div class="card-desc">Кто сейчас на смене с ТСД</div>
       </div>
     </div>
+  </div>
+</div>
 
 <!-- ВЗЯТЬ ТСД -->
 <div class="screen" id="screen-tsd-take">
   <div class="page-title">Взять ТСД</div>
   <div class="page-subtitle">Укажите номер терминала</div>
-  <div class="tsd-take-form">
+  <div class="tsd-take-form" style="padding: 0 16px;">
     <label class="form-label">Инвентарный номер ТСД</label>
     <input class="form-input" type="number" placeholder="Например: 45" id="tsdNumInput">
     <label class="form-label">Состояние при выдаче</label>
@@ -273,7 +259,7 @@
 <div class="screen" id="screen-tsd-give">
   <div class="page-title">Сдать ТСД</div>
   <div class="page-subtitle">Зарегистрируйте возврат</div>
-  <div class="tsd-take-form">
+  <div class="tsd-take-form" style="padding: 0 16px;">
     <label class="form-label">Состояние при сдаче</label>
     <div class="condition-pills" id="tsdGiveCond">
       <div class="cpill ok selected" data-val="ok" onclick="selectPill(this)">✅ Исправен</div>
@@ -337,7 +323,9 @@
 
   let currentScreen = 'screen-auth';
   let screenHistory = [];
-  let html5QrcodeScanner;
+  
+  // Объявляем переменную только ОДИН раз
+  let html5QrcodeScanner = null;
 
   // Инициализация при запуске
   window.addEventListener('DOMContentLoaded', () => {
@@ -346,7 +334,7 @@
     if (savedTheme === 'light') document.body.classList.add('light-theme');
     updateThemeIcon(savedTheme === 'light');
 
-    // 2. Читаем параметры из ссылки (URL)
+    // 2. Читаем параметры из ссылки
     const urlParams = new URLSearchParams(window.location.search);
     const role = urlParams.get('role');
     const wms = urlParams.get('wms');
@@ -355,7 +343,6 @@
 
     // 3. Логика авторизации
     if (role && role !== 'none') {
-      // Пользователь уже найден в БД Питон-ботом!
       document.getElementById('homeName').textContent = name;
       document.getElementById('homeZone').textContent = zone;
       
@@ -363,26 +350,23 @@
       document.getElementById('ubName').textContent = name.split(' ')[0];
       document.getElementById('userBadge').style.display = 'flex';
 
-      // Показываем меню старшего, если роль подходит
       if (['senior', 'shift_manager', 'admin'].includes(role)) {
         document.getElementById('shiftCard').style.display = 'flex';
         document.getElementById('roleTag').textContent = role === 'admin' ? 'АДМИН' : (role === 'senior' ? 'СТАРШИЙ' : 'НАЧ.СМЕНЫ');
       }
-      
       navTo('screen-home');
     } else {
-      // Пользователя нет, показываем экран логина
       navTo('screen-auth');
     }
   });
 
-  // --- ОТПРАВКА ДАННЫХ В БОТ (ЗАКРЫВАЕТ ОКНО) ---
+  // --- ОТПРАВКА ДАННЫХ В БОТ ---
   function sendDataToBot(action, payload) {
     const data = { action: action, ...payload };
-    tg.sendData(JSON.stringify(data)); // Отправляет данные и закрывает Web App
+    tg.sendData(JSON.stringify(data)); 
   }
 
-  // Функции для каждой кнопки
+  // --- КНОПКИ МЕНЮ ---
   function sendAuth() {
     const wms = document.getElementById('wmsInput').value.trim();
     if(wms.length < 2) return alert("Введите корректный логин!");
@@ -401,35 +385,11 @@
     sendDataToBot("tsd_give", { condition: cond });
   }
 
-  function sendFault() {
-    const type = document.querySelector('#faultType .selected').dataset.val;
-    const desc = document.getElementById('faultDesc').value.trim();
-    if(!desc) return alert("Опишите неисправность!");
-    sendDataToBot("fault", { fault_type: type, description: desc });
-  }
-
-  function sendRevisor() {
-    const cell = document.getElementById('revCell').value.trim();
-    const desc = document.getElementById('revDesc').value.trim();
-    if(!cell || !desc) return alert("Заполните оба поля!");
-    sendDataToBot("revisor", { cell: cell, description: desc });
-  }
-
   function sendSuggestion(mode) {
     const text = document.getElementById('sugDesc').value.trim();
     if(text.length < 10) return alert("Опишите идею подробнее (минимум 10 символов)");
     sendDataToBot("suggestion", { text: text, mode: mode });
   }
-
-  function sendCheckin(type) {
-    sendDataToBot("shift_checkin", { shift_type: type });
-  }
-
-  function sendCheckout() {
-    sendDataToBot("shift_checkout", {});
-  }
-
-let html5QrcodeScanner = null;
 
   // --- СКАНЕР ШТРИХ-КОДОВ (Code128) ---
   function startScanner() {
@@ -440,51 +400,39 @@ let html5QrcodeScanner = null;
     }
 
     html5QrcodeScanner.start(
-      { facingMode: "environment" }, // Пытаемся открыть заднюю камеру
+      { facingMode: "environment" }, 
       { fps: 10, qrbox: { width: 250, height: 100 } },
       (decodedText) => {
-        // Камера успешно прочитала штрих-код!
         closeScanner();
-        
-        // Очищаем код от возможных спецсимволов и префиксов
         let cleanText = decodedText.trim().toUpperCase();
-        
-        // Если код начинается с "20", отрезаем эти первые два символа
         if (cleanText.startsWith("20")) {
             cleanText = cleanText.substring(2);
         }
-        
-        // Отправляем очищенный код боту
         sendDataToBot("login", { wms: cleanText });
       },
-      (errorMessage) => { 
-        // Игнорируем пустые кадры, пока штрих-код не пойман
-      }
+      (errorMessage) => { }
     ).catch(err => {
-      // Если камера физически недоступна (например, вы открыли с ПК)
-      alert("⚠️ Ошибка доступа к камере. Проверьте разрешения.\nТех.детали: " + err);
+      alert("⚠️ Ошибка доступа к камере.\nПроверьте разрешения в браузере или Telegram.\n\nТех.детали: " + err);
       closeScanner();
     });
   }
 
   function closeScanner() {
     document.getElementById('scannerOverlay').classList.remove('show');
-    
-    // Безопасно выключаем камеру, чтобы она не висела в памяти телефона
     try {
       if (html5QrcodeScanner) {
         html5QrcodeScanner.stop().then(() => {
             html5QrcodeScanner.clear();
-        }).catch(err => console.log("Камера уже остановлена"));
+        }).catch(err => console.log(err));
       }
     } catch (e) {}
   }
 
-
-  // --- UI И НАВИГАЦИЯ ---
+  // --- НАВИГАЦИЯ И UI ---
   function navTo(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
+    
     if (screenId !== currentScreen && screenId !== 'screen-auth' && screenId !== 'screen-home') {
       screenHistory.push(currentScreen);
       document.getElementById('backBtn').classList.add('visible');
@@ -501,11 +449,6 @@ let html5QrcodeScanner = null;
       navTo(prev);
       screenHistory.pop(); 
     }
-  }
-
-  function selectFault(el) {
-    document.querySelectorAll('.fault-type-btn').forEach(b => b.classList.remove('selected'));
-    el.classList.add('selected');
   }
 
   function selectPill(el) {
