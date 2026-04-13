@@ -428,33 +428,42 @@
   function startScanner() {
     document.getElementById('scannerOverlay').classList.add('show');
     
+    // Инициализируем объект сканера
     html5QrcodeScanner = new Html5Qrcode("qr-reader");
     const config = { fps: 10, qrbox: { width: 250, height: 100 } };
 
+    // Пытаемся запустить заднюю камеру
     html5QrcodeScanner.start(
-      { facingMode: "environment" }, // задняя камера
+      { facingMode: "environment" }, 
       config,
       (decodedText) => {
         // Успех!
         closeScanner();
         
-        // Очищаем код от возможных спецсимволов и префиксов
+        // Очищаем код от префикса 20
         let cleanText = decodedText.trim().toUpperCase();
-        
-        // Если код начинается с "20", отрезаем эти первые два символа
         if (cleanText.startsWith("20")) {
             cleanText = cleanText.substring(2);
         }
-        
-        // Автоматически отправляем очищенный код боту
         sendDataToBot("login", { wms: cleanText });
       },
-      (errorMessage) => { /* игнорируем ошибки чтения кадров */ }
-    ).catch(err => alert("Ошибка камеры: " + err));
+      (errorMessage) => { 
+        // Игнорируем пустые кадры 
+      }
+    ).catch(err => {
+      // Если камера не запустилась (нет HTTPS, нет задней камеры или нет прав)
+      closeScanner();
+      alert("⚠️ Не удалось включить камеру.\n\nПричины:\n1. Нет прав на камеру в Telegram.\n2. Бот открыт не по ссылке HTTPS.\n3. Вы открыли бота с ПК (нет задней камеры).\n\nТех.ошибка: " + err);
+    });
   }
 
   function closeScanner() {
-    if (html5QrcodeScanner) html5QrcodeScanner.stop();
+    // Правильно останавливаем и очищаем память сканера
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+          html5QrcodeScanner.clear();
+      }).catch(err => console.log("Сканер уже остановлен."));
+    }
     document.getElementById('scannerOverlay').classList.remove('show');
   }
 
