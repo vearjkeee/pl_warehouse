@@ -232,17 +232,14 @@
       </div>
     </div>
     
-    <!-- Карточка управления сменой (скрыта по умолчанию) -->
-    <div class="menu-card wide" id="shiftCard" onclick="navTo('screen-shift')" style="display: none;">
-      <div class="card-icon purple">👥</div>
+<!-- Статистика склада (скрыта по умолчанию) -->
+    <div class="menu-card wide" id="shiftCard" onclick="sendDataToBot('shift_stats', {})" style="display: none;">
+      <div class="card-icon purple">📊</div>
       <div class="card-text">
-        <div class="card-title">Управление сменой <span class="mock-tag" id="roleTag">СТАРШИЙ</span></div>
-        <div class="card-desc">Открытие смены · Статистика</div>
+        <div class="card-title">Сводка по складу <span class="mock-tag" id="roleTag">СТАРШИЙ</span></div>
+        <div class="card-desc">Кто сейчас на смене с ТСД</div>
       </div>
-      <div class="card-arrow">›</div>
     </div>
-  </div>
-</div>
 
 <!-- ВЗЯТЬ ТСД -->
 <div class="screen" id="screen-tsd-take">
@@ -320,22 +317,6 @@
     <button class="btn-primary" style="background: var(--dark3); color: var(--text); border: 1px solid var(--border);" onclick="sendSuggestion('photo')">📎 Добавить фото к тексту</button>
   </div>
 </div>
-
-<!-- УПРАВЛЕНИЕ СМЕНОЙ -->
-<div class="screen" id="screen-shift">
-  <div class="page-title">Управление сменой</div>
-  <div class="page-subtitle">Регистрация времени работы</div>
-  <div class="shift-toggle-row">
-    <button class="shift-toggle-btn start" onclick="sendCheckin('day')">▶ Открыть смену (12ч)</button>
-  </div>
-  <div class="shift-toggle-row">
-    <button class="shift-toggle-btn" style="background: var(--blue); color: #fff" onclick="sendCheckin('middle')">🕗 Средняя смена (8ч)</button>
-  </div>
-  <div class="shift-toggle-row">
-    <button class="shift-toggle-btn end" onclick="sendCheckout()">■ Завершить смену</button>
-  </div>
-</div>
-
 
 <!-- СКАНЕР -->
 <div class="scanner-overlay" id="scannerOverlay">
