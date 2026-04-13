@@ -258,6 +258,9 @@
       <div class="cpill bad" data-val="bad" onclick="selectPill(this)">❌ Не работает</div>
     </div>
   </div>
+  <div class="info-row" style="margin-top: 10px;">
+    ℹ️ При нажатии на кнопку окно закроется. Бот попросит вас прислать 2 фотографии терминала прямо в чат.
+  </div>
   <div style="padding: 16px">
     <button class="btn-primary" onclick="sendTsdTake()">Подтвердить взятие</button>
   </div>
@@ -275,6 +278,9 @@
       <div class="cpill bad" data-val="bad" onclick="selectPill(this)">❌ Не работает</div>
     </div>
   </div>
+  <div class="info-row" style="margin-top: 10px;">
+    ℹ️ Бот попросит вас прислать 2 фотографии терминала прямо в чат на следующем шаге.
+  </div>
   <div style="padding: 16px">
     <button class="btn-primary" onclick="sendTsdGive()">Подтвердить сдачу</button>
   </div>
@@ -283,39 +289,24 @@
 <!-- НЕИСПРАВНОСТЬ -->
 <div class="screen" id="screen-fault">
   <div class="page-title">Неисправность</div>
-  <div class="page-subtitle">Сообщить об оборудовании</div>
-  <div class="fault-type-grid" id="faultType">
-    <div class="fault-type-btn selected" data-val="Стеллаж" onclick="selectFault(this)">
-      <div class="ft-ico">🏗️</div><div class="ft-lbl">Стеллаж</div>
-    </div>
-    <div class="fault-type-btn" data-val="Тележка" onclick="selectFault(this)">
-      <div class="ft-ico">🛒</div><div class="ft-lbl">Тележка</div>
-    </div>
-    <div class="fault-type-btn" data-val="Электро" onclick="selectFault(this)">
-      <div class="ft-ico">⚡</div><div class="ft-lbl">Электро</div>
-    </div>
-    <div class="fault-type-btn" data-val="Прочее" onclick="selectFault(this)">
-      <div class="ft-ico">📦</div><div class="ft-lbl">Прочее</div>
-    </div>
+  <div class="page-subtitle">Стеллажи, техника, освещение</div>
+  <div class="info-row" style="margin-top: 10px;">
+    ℹ️ При нажатии на кнопку приложение закроется. Бот в чате попросит вас описать проблему текстом, а также прикрепить фотографии поломки.
   </div>
-  <textarea class="textarea-field" id="faultDesc" placeholder="Опишите проблему: ряд/секция, характер повреждения..."></textarea>
   <div style="padding: 16px">
-    <button class="btn-primary" onclick="sendFault()">Отправить сообщение</button>
+    <button class="btn-primary" onclick="sendDataToBot('fault_start', {})">Понятно, начать оформление</button>
   </div>
 </div>
 
 <!-- РЕВИЗОРАМ -->
 <div class="screen" id="screen-revisor-new">
   <div class="page-title">Сообщить ревизорам</div>
-  <div class="page-subtitle">Опишите пересорт в ячейке</div>
-  <div class="tsd-take-form">
-    <label class="form-label">Номер ячейки</label>
-    <input class="form-input" type="text" id="revCell" placeholder="Например: B-042-03">
-    <label class="form-label">Описание ситуации</label>
+  <div class="page-subtitle">Пересорт или проблема с ячейкой</div>
+  <div class="info-row" style="margin-top: 10px;">
+    ℹ️ Приложение закроется. В чате с ботом вам нужно будет написать номер ячейки, артикулы и прислать подтверждающие фото.
   </div>
-  <textarea class="textarea-field" id="revDesc" placeholder="Артикул в ячейке, что ожидалось, что нашли..."></textarea>
   <div style="padding: 16px">
-    <button class="btn-primary" onclick="sendRevisor()">Отправить ревизорам</button>
+    <button class="btn-primary" onclick="sendDataToBot('revisor_start', {})">Написать ревизорам</button>
   </div>
 </div>
 
@@ -323,9 +314,10 @@
 <div class="screen" id="screen-suggestion">
   <div class="page-title">Журнал предложений</div>
   <div class="page-subtitle">Идеи по улучшению работы</div>
-  <textarea class="textarea-field" id="sugDesc" placeholder="Опишите вашу идею или предложение максимально подробно..."></textarea>
-  <div style="padding: 16px">
-    <button class="btn-primary" onclick="sendSuggestion()">Отправить руководству</button>
+  <textarea class="textarea-field" id="sugDesc" placeholder="Опишите вашу идею максимально подробно..."></textarea>
+  <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 10px;">
+    <button class="btn-primary" onclick="sendSuggestion('send')">Отправить текст руководству</button>
+    <button class="btn-primary" style="background: var(--dark3); color: var(--text); border: 1px solid var(--border);" onclick="sendSuggestion('photo')">📎 Добавить фото к тексту</button>
   </div>
 </div>
 
@@ -436,10 +428,10 @@
     sendDataToBot("revisor", { cell: cell, description: desc });
   }
 
-  function sendSuggestion() {
+  function sendSuggestion(mode) {
     const text = document.getElementById('sugDesc').value.trim();
     if(text.length < 10) return alert("Опишите идею подробнее (минимум 10 символов)");
-    sendDataToBot("suggestion", { text: text });
+    sendDataToBot("suggestion", { text: text, mode: mode });
   }
 
   function sendCheckin(type) {
