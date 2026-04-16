@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ПЛ Склад</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Сканер QR и штрих-кодов -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- Парсер CSV (для прямого чтения из Google Sheets) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -64,7 +67,6 @@ input,textarea{font-family:inherit}
 .nav-lbl{font-size:9px;color:var(--text3);margin-top:2px;font-weight:500;letter-spacing:.3px;transition:color .15s}
 .nav-btn.active .nav-ico{transform:scale(1.1)}
 .nav-btn.active .nav-lbl{color:var(--red)}
-.nav-dot{position:absolute;top:7px;right:calc(50% - 13px);width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid var(--bg2)}
 
 /* ── AUTH ── */
 .auth-wrap{min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:0}
@@ -108,18 +110,6 @@ input,textarea{font-family:inherit}
 .ci-o{background:rgba(255,159,10,.12)} .ci-p{background:rgba(191,90,242,.12)} .ci-t{background:rgba(100,210,255,.12)}
 .mc-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
 .mc-desc{font-size:11px;color:var(--text3);line-height:1.4}
-.mc-badge{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
-
-/* ── NOTIF ── */
-.notif-list{padding:0 16px}
-.ni{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background .12s}
-.ni:active{background:var(--bg3)}
-.ni.red{border-left:3px solid var(--red)}
-.ni.orange{border-left:3px solid var(--orange)}
-.ni-ico{font-size:19px;flex-shrink:0;padding-top:1px}
-.ni-title{font-size:12px;font-weight:600}
-.ni-desc{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4}
-.ni-time{font-size:10px;color:var(--text3);margin-top:3px}
 
 /* ── PAGE HEAD ── */
 .ph{padding:14px 16px 3px}
@@ -135,28 +125,40 @@ input,textarea{font-family:inherit}
 
 /* ── ACTION ROW ── */
 .act-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
-.act-btn{padding:15px 12px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;font-weight:600;transition:transform .1s,opacity .1s}
+.act-btn{padding:15px 12px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;font-weight:600;transition:transform .1s,opacity .1s; text-align:center; line-height:1.3}
 .act-btn:active{transform:scale(.96);opacity:.85}
 .act-btn .b-ico{font-size:24px}
 .act-btn.p{background:var(--red);color:#fff}
 .act-btn.s{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow)}
 
-/* ── LIST ── */
+/* ── LIST & SKELETON ── */
 .list-wrap{padding:0 16px}
 .list-hd{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
-.li{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:background .12s}
-.li:active{background:var(--bg3)}
+.li{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:11px;}
 .tsd-n{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--red);width:44px;flex-shrink:0}
 .tsd-i{flex:1}
 .tsd-nm{font-size:12px;font-weight:500}
 .tsd-zn{font-size:10px;color:var(--text3);margin-top:2px}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--bg3) 25%, var(--card) 50%, var(--bg3) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-load 1.5s infinite;
+    border-radius: var(--r2);
+    height: 52px;
+    margin-bottom: 7px;
+    border: 1px solid var(--border);
+}
+@keyframes skeleton-load {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
 
 /* ── PILLS ── */
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
 .p-g{background:rgba(48,209,88,.15);color:var(--green);border:1px solid rgba(48,209,88,.3)}
 .p-o{background:rgba(255,159,10,.15);color:var(--orange);border:1px solid rgba(255,159,10,.3)}
-.p-r{background:var(--red-s);color:var(--red);border:1px solid var(--red-b)}
 
 /* ── FORM ── */
 .fb{padding:0 16px 11px}
@@ -166,22 +168,11 @@ input,textarea{font-family:inherit}
 .fi.mono{font-family:'Unbounded',monospace;letter-spacing:1.5px}
 .fta{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 13px;font-size:13px;color:var(--text);outline:none;resize:none;min-height:84px;transition:border-color .15s;line-height:1.5}
 .fta:focus{border-color:var(--red)}
-.fta::placeholder{color:var(--text3)}
 .cond-row{display:flex;gap:7px;margin-bottom:13px}
 .cp{flex:1;padding:9px 7px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);text-align:center;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text2)}
 .cp.ok{background:rgba(48,209,88,.1);border-color:var(--green);color:var(--green)}
 .cp.warn{background:rgba(255,159,10,.1);border-color:var(--orange);color:var(--orange)}
 .cp.bad{background:var(--red-s);border-color:var(--red);color:var(--red)}
-
-/* ── PHOTO GRID ── */
-.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 16px 13px}
-.ps{aspect-ratio:1;background:var(--card);border:2px dashed var(--border);border-radius:var(--r2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
-.ps:active{border-color:var(--red);background:var(--red-s)}
-.ps .ps-ico{font-size:24px}
-.ps .ps-lbl{font-size:10px;color:var(--text3);text-align:center;padding:0 6px}
-.ps.done{border-style:solid;border-color:var(--green);background:rgba(48,209,88,.08)}
-.ps.done .ps-lbl{color:var(--green)}
-.ps-check{position:absolute;top:6px;right:6px;width:18px;height:18px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
 
 /* ── FAULT GRID ── */
 .fault-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
@@ -201,76 +192,15 @@ input,textarea{font-family:inherit}
 .doc-icon{width:38px;height:38px;background:var(--red-s);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .doc-name{font-size:12px;font-weight:500}
 .doc-meta{font-size:10px;color:var(--text3);margin-top:2px}
-.doc-arr{color:var(--text3);font-size:15px;margin-left:auto}
-
-/* ── REVISOR ── */
-.rev-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:0 16px 9px;overflow:hidden;cursor:pointer;transition:opacity .12s}
-.rev-card:active{opacity:.8}
-.rev-photo{height:90px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--text3);position:relative}
-.rev-st{position:absolute;top:7px;right:7px;padding:3px 7px;border-radius:5px;font-size:9px;font-weight:700}
-.rev-st.done{background:var(--green);color:#fff}
-.rev-st.new{background:var(--red);color:#fff}
-.rev-st.rej{background:var(--text3);color:#fff}
-.rev-body{padding:11px 13px}
-.rev-from{font-size:10px;color:var(--text3);margin-bottom:3px}
-.rev-text{font-size:12px;font-weight:500}
-.rev-cell{font-family:'Unbounded',monospace;font-size:10px;color:var(--red);margin-top:3px}
-
-/* ── SUGGESTION ── */
-.sug-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:13px;margin:0 16px 7px;cursor:pointer;transition:background .12s}
-.sug-item:active{background:var(--bg3)}
-.sug-meta{font-size:10px;color:var(--text3);margin-bottom:4px}
-.sug-text{font-size:12px;line-height:1.5}
-.sug-id{font-size:9px;color:var(--text3);margin-top:4px;font-family:monospace}
 
 /* ── INFO BOX ── */
 .info-box{margin:0 16px 13px;background:rgba(10,132,255,.08);border-left:3px solid var(--blue);border-radius:0 var(--r2) var(--r2) 0;padding:9px 13px;font-size:11px;color:var(--text2);line-height:1.5}
 
-/* ── SHIFT ── */
-.shift-toggle{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
-.sh-btn{padding:14px 11px;border-radius:var(--r);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .1s}
-.sh-btn:active{transform:scale(.96)}
-.sh-btn.start{background:var(--green);color:#fff}
-.sh-btn.end{background:var(--card);color:var(--text);border:1px solid var(--border)}
-.zones-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 16px 13px}
-.zc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:11px}
-.zc.ok{border-color:var(--green)}
-.zc.err{border-color:var(--red);border-style:dashed}
-.zd{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
-.zd-g{background:var(--green)} .zd-r{background:var(--red)}
-.zc-nm{font-size:11px;font-weight:600;margin-bottom:4px}
-.zc-who{font-size:10px;color:var(--text3)}
-.zc-who.err{color:var(--red);font-weight:500}
-.shift-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:0 16px 9px;padding:13px;box-shadow:var(--shadow)}
-.sc-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:11px}
-.sp{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border)}
-.sp:last-child{border-bottom:none;padding-bottom:0}
-.sp-ava{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
-.sp-name{font-size:12px;font-weight:500}
-.sp-role{font-size:10px;color:var(--text3);margin-top:1px}
-.stats-tbl{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin:0 16px 9px;padding:13px;overflow-x:auto;box-shadow:var(--shadow)}
-.stats-tbl table{width:100%;border-collapse:collapse;font-size:11px}
-.stats-tbl th{text-align:left;padding:3px 7px 7px 0;font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
-.stats-tbl th:not(:first-child),.stats-tbl td:not(:first-child){text-align:right}
-.stats-tbl td{padding:4px 7px 4px 0;border-top:1px solid var(--border)}
-.stats-tbl tr:first-child td{border-top:none}
-.stats-tbl .tot td{font-weight:700;border-top:2px solid var(--border);padding-top:7px}
-.sn{font-family:'Unbounded',monospace;font-size:12px;font-weight:600}
-
-/* ── MODAL ── */
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
-.modal-ov.open{display:flex}
-.modal-sheet{background:var(--bg2);border-radius:var(--r3) var(--r3) 0 0;width:100%;max-width:480px;padding:8px 18px max(26px,env(safe-area-inset-bottom,26px));animation:sheetUp .28s cubic-bezier(.34,1.2,.64,1)}
-@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sh-handle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:7px auto 16px}
-.sh-ico{font-size:38px;text-align:center;margin-bottom:9px}
-.sh-title{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;margin-bottom:9px}
-.sh-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:18px}
-
 /* ── SCANNER ── */
 .scan-ov{display:none;position:fixed;inset:0;background:#000;z-index:300;flex-direction:column;align-items:center;justify-content:center}
 .scan-ov.open{display:flex}
-#qr-reader{width:280px;border-radius:12px;overflow:hidden;background:#111}
+#qr-reader{width:100%; min-height:300px; object-fit:cover; border-radius:12px; overflow:hidden; background:#111}
+#qr-reader video {object-fit: cover;}
 .scan-hint{color:rgba(255,255,255,.5);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:22px}
 .scan-close{padding:11px 26px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r);color:#fff;font-size:14px;margin-top:22px}
 
@@ -278,8 +208,6 @@ input,textarea{font-family:inherit}
 .mb10{margin-bottom:10px}
 .mb14{margin-bottom:14px}
 .safe-b{height:max(18px,env(safe-area-inset-bottom,18px))}
-.row-btns{display:flex;gap:8px;padding:0 16px 13px}
-.row-btns .btn-secondary{flex:1}
 </style>
 </head>
 <body>
@@ -335,41 +263,29 @@ input,textarea{font-family:inherit}
   <div class="menu-grid">
     <div class="mc" onclick="nav('s-tsd')">
       <div class="mc-icon ci-r">📟</div>
-      <div><div class="mc-title">Журнал ТСД</div><div class="mc-desc">Взятие и сдача терминалов</div></div>
+      <div><div class="mc-title">Журнал ТСД</div><div class="mc-desc">Взятие и сдача</div></div>
     </div>
     <div class="mc" onclick="nav('s-revisor')">
       <div class="mc-icon ci-o">🔍</div>
       <div><div class="mc-title">Ревизорам</div><div class="mc-desc">Сообщить о пересорте</div></div>
-      <div class="mc-badge" id="revBadge" style="display:none">3</div>
     </div>
     <div class="mc" onclick="nav('s-fault')">
       <div class="mc-icon ci-b">🔧</div>
-      <div><div class="mc-title">Неисправность</div><div class="mc-desc">Стеллаж, тележка</div></div>
+      <div><div class="mc-title">Неисправность</div><div class="mc-desc">Стеллаж, тележка, прочее</div></div>
     </div>
     <div class="mc" onclick="nav('s-docs')">
       <div class="mc-icon ci-g">📚</div>
-      <div><div class="mc-title">Инструкции</div><div class="mc-desc">Регламенты и PDF</div></div>
+      <div><div class="mc-title">Инструкции</div><div class="mc-desc">Инструкции по процессам</div></div>
     </div>
     <div class="mc wide" onclick="nav('s-suggestion')">
       <div class="mc-icon ci-t">💡</div>
-      <div class="mc-text"><div class="mc-title">Предложения</div><div class="mc-desc">Идеи по улучшению работы склада</div></div>
+      <div class="mc-text"><div class="mc-title">Журнал предложений</div><div class="mc-desc">Идеи по улучшению работы склада</div></div>
       <div class="mc-arr">›</div>
     </div>
     <div class="mc wide" id="mc-shift" style="display:none" onclick="nav('s-shift')">
       <div class="mc-icon ci-p">👥</div>
-      <div class="mc-text"><div class="mc-title">Управление сменой</div><div class="mc-desc">Состав · Статистика · Дерегистрация</div></div>
+      <div class="mc-text"><div class="mc-title">Панель управления</div><div class="mc-desc">Для старших смены</div></div>
       <div class="mc-arr">›</div>
-    </div>
-  </div>
-  <div class="sec-lbl">Уведомления</div>
-  <div class="notif-list">
-    <div class="ni red" onclick="showModal('Несданный ТСД','ТСД #047 — Козлов А.В. (Экспедиция) более 13 часов. Необходимо принудительное снятие.','🚨')">
-      <div class="ni-ico">🚨</div>
-      <div><div class="ni-title">Несданный ТСД #047</div><div class="ni-desc">Козлов А.В. · Зона экспедиции</div><div class="ni-time">Сегодня, 20:15</div></div>
-    </div>
-    <div class="ni orange" onclick="showModal('Неисправность','Стеллаж B-12, уровень 3. Петров В.С. Ожидает подтверждения.','⚠️')">
-      <div class="ni-ico">⚠️</div>
-      <div><div class="ni-title">Неисправность оборудования</div><div class="ni-desc">Стеллаж B-12 · Петров В.С.</div><div class="ni-time">Сегодня, 18:42</div></div>
     </div>
   </div>
   <div class="safe-b"></div>
@@ -379,19 +295,16 @@ input,textarea{font-family:inherit}
 <div class="screen" id="s-tsd">
   <div class="ph"><div class="ph-title">Журнал ТСД</div><div class="ph-sub">Регистрация терминалов сбора данных</div></div>
   <div class="tsd-stats">
-    <div class="tsd-stat"><div class="ts-num c-g" id="tsd-free">84</div><div class="ts-lbl">Свободно</div></div>
-    <div class="tsd-stat"><div class="ts-num c-o" id="tsd-inuse">31</div><div class="ts-lbl">На руках</div></div>
-    <div class="tsd-stat"><div class="ts-num c-r" id="tsd-repair">3</div><div class="ts-lbl">В ремонте</div></div>
+    <div class="tsd-stat"><div class="ts-num c-o" id="tsd-inuse">-</div><div class="ts-lbl">На руках</div></div>
   </div>
   <div class="act-row">
     <button class="act-btn p" onclick="nav('s-tsd-take')"><span class="b-ico">📥</span>Взять ТСД</button>
     <button class="act-btn s" onclick="nav('s-tsd-give')"><span class="b-ico">📤</span>Сдать ТСД</button>
   </div>
-  <div class="list-wrap">
-    <div class="list-hd">Сейчас на руках</div>
-    <div class="li"><div class="tsd-n">#047</div><div class="tsd-i"><div class="tsd-nm">Козлов Александр В.</div><div class="tsd-zn">Зона экспедиции</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">08:12</div><div style="margin-top:3px"><span class="pill p-r">Не сдан</span></div></div></div>
-    <div class="li"><div class="tsd-n">#023</div><div class="tsd-i"><div class="tsd-nm">Иванов Пётр С.</div><div class="tsd-zn">Зона отбора</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">08:05</div><div style="margin-top:3px"><span class="pill p-g">Активен</span></div></div></div>
-    <div class="li"><div class="tsd-n">#081</div><div class="tsd-i"><div class="tsd-nm">Смирнова О.И.</div><div class="tsd-zn">Зона приёмки</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">09:30</div><div style="margin-top:3px"><span class="pill p-o">Сбой</span></div></div></div>
+  <!-- Динамический список из CSV -->
+  <div class="list-wrap" id="tsd-list-container">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
   </div>
   <div class="safe-b"></div>
 </div>
@@ -401,7 +314,7 @@ input,textarea{font-family:inherit}
   <div class="ph"><div class="ph-title">Взять ТСД</div><div class="ph-sub">Укажите номер терминала</div></div>
   <div class="fb mb14">
     <label class="fl">Инвентарный номер</label>
-    <input class="fi mono" id="tsdNum" type="number" placeholder="045">
+    <input class="fi mono" id="tsdNum" type="number" placeholder="45">
   </div>
   <div class="fb">
     <label class="fl">Состояние при выдаче</label>
@@ -411,14 +324,14 @@ input,textarea{font-family:inherit}
       <div class="cp" onclick="selCond('condTake',this,'bad')">❌ Не работает</div>
     </div>
   </div>
-  <div class="info-box">ℹ️ После подтверждения бот попросит 2 фото: спереди и сзади терминала — прямо в чат</div>
+  <div class="info-box">ℹ️ После подтверждения бот попросит 2 фото в чат (спереди и сзади)</div>
   <div class="px16"><button class="btn-primary" onclick="sendTsdTake()">Подтвердить взятие</button></div>
   <div class="safe-b"></div>
 </div>
 
 <!-- ══ SCREEN: TSD GIVE ══ -->
 <div class="screen" id="s-tsd-give">
-  <div class="ph"><div class="ph-title">Сдать ТСД</div><div class="ph-sub">Зарегистрируйте возврат терминала</div></div>
+  <div class="ph"><div class="ph-title">Сдать ТСД</div><div class="ph-sub">Зарегистрируйте возврат</div></div>
   <div class="fb">
     <label class="fl">Состояние при сдаче</label>
     <div class="cond-row" id="condGive">
@@ -427,61 +340,56 @@ input,textarea{font-family:inherit}
       <div class="cp" onclick="selCond('condGive',this,'bad')">❌ Не работает</div>
     </div>
   </div>
-  <div class="info-box">ℹ️ После подтверждения бот попросит 2 фото прямо в чат</div>
+  <div class="info-box">ℹ️ После подтверждения бот попросит 2 фото в чат</div>
   <div class="px16"><button class="btn-primary" onclick="sendTsdGive()">Подтвердить сдачу</button></div>
   <div class="safe-b"></div>
 </div>
 
 <!-- ══ SCREEN: FAULT ══ -->
 <div class="screen" id="s-fault">
-  <div class="ph"><div class="ph-title">Неисправность</div><div class="ph-sub">Сообщить об оборудовании</div></div>
+  <div class="ph"><div class="ph-title">Неисправность</div><div class="ph-sub">Сообщить о поломке</div></div>
   <div class="sec-lbl">Тип оборудования</div>
   <div class="fault-grid">
     <div class="ft sel" onclick="selFault(this)"><div class="ft-ico">🏗️</div><div class="ft-lbl">Стеллаж</div><div class="ft-sub">Повреждение</div></div>
     <div class="ft" onclick="selFault(this)"><div class="ft-ico">🛒</div><div class="ft-lbl">Тележка</div><div class="ft-sub">Поломка</div></div>
-    <div class="ft" onclick="selFault(this)"><div class="ft-ico">⚡</div><div class="ft-lbl">Электро</div><div class="ft-sub">Свет, розетки</div></div>
+    <div class="ft" onclick="selFault(this)"><div class="ft-ico">⚡</div><div class="ft-lbl">Электротележка</div><div class="ft-sub">Поломка</div></div>
     <div class="ft" onclick="selFault(this)"><div class="ft-ico">📦</div><div class="ft-lbl">Прочее</div><div class="ft-sub">Другое</div></div>
   </div>
-  <div class="info-box">ℹ️ После подтверждения бот попросит описание и фото прямо в чат. Старший смены будет уведомлён.</div>
+  <div class="info-box">ℹ️ После подтверждения бот попросит описание и фото прямо в чат.</div>
   <div class="px16"><button class="btn-primary" onclick="sendFault()">Начать оформление</button></div>
   <div class="safe-b"></div>
 </div>
 
 <!-- ══ SCREEN: DOCS ══ -->
 <div class="screen" id="s-docs">
-  <div class="ph"><div class="ph-title">Инструкции</div><div class="ph-sub">Регламенты и обучающие материалы</div></div>
+  <div class="ph"><div class="ph-title">Инструкции</div><div class="ph-sub">Регламенты и инструкции по процессам</div></div>
   <div class="chip-scroll">
-    <div class="zchip active" onclick="filterDocs(this)">Все</div>
-    <div class="zchip" onclick="filterDocs(this)">Отбор</div>
-    <div class="zchip" onclick="filterDocs(this)">Приёмка</div>
-    <div class="zchip" onclick="filterDocs(this)">Экспедиция</div>
-    <div class="zchip" onclick="filterDocs(this)">Возвраты</div>
-    <div class="zchip" onclick="filterDocs(this)">Общие</div>
+    <div class="zchip active" onclick="filterDocs(this, 'Все')">Все</div>
+    <div class="zchip" onclick="filterDocs(this, 'Отбор')">Отбор</div>
+    <div class="zchip" onclick="filterDocs(this, 'Приёмка')">Приёмка</div>
+    <div class="zchip" onclick="filterDocs(this, 'Экспедиция')">Экспедиция</div>
+    <div class="zchip" onclick="filterDocs(this, 'Возвраты')">Возвраты</div>
+    <div class="zchip" onclick="filterDocs(this, 'Общие')">Общие</div>
   </div>
-  <div id="docs-list">
-    <div class="doc-item" onclick="openDoc('https://drive.google.com')"><div class="doc-icon">📋</div><div><div class="doc-name">Инструкция по работе с ТСД</div><div class="doc-meta">Общие · 12.03.2025 · PDF</div></div><div class="doc-arr">›</div></div>
-    <div class="doc-item" onclick="openDoc('https://drive.google.com')"><div class="doc-icon">📦</div><div><div class="doc-name">Регламент отбора заказов</div><div class="doc-meta">Отбор · 05.02.2025 · PDF</div></div><div class="doc-arr">›</div></div>
-    <div class="doc-item" onclick="openDoc('https://drive.google.com')"><div class="doc-icon">🚛</div><div><div class="doc-name">Порядок приёмки товара</div><div class="doc-meta">Приёмка · 18.01.2025 · PDF</div></div><div class="doc-arr">›</div></div>
-    <div class="doc-item" onclick="openDoc('https://drive.google.com')"><div class="doc-icon">🔄</div><div><div class="doc-name">Обработка возвратов WB</div><div class="doc-meta">Возвраты · 20.03.2025 · PDF</div></div><div class="doc-arr">›</div></div>
-    <div class="doc-item" onclick="openDoc('https://drive.google.com')"><div class="doc-icon">📋</div><div><div class="doc-name">Стандарты упаковки WB</div><div class="doc-meta">Экспедиция · 01.04.2025 · PDF</div></div><div class="doc-arr">›</div></div>
+  <!-- Динамический список из CSV -->
+  <div id="docs-list-container">
+    <div class="skeleton" style="margin: 0 16px 7px;"></div>
+    <div class="skeleton" style="margin: 0 16px 7px;"></div>
   </div>
   <div class="safe-b"></div>
 </div>
 
 <!-- ══ SCREEN: REVISOR ══ -->
 <div class="screen" id="s-revisor">
-  <div class="ph"><div class="ph-title">Ревизорам</div><div class="ph-sub">Сообщить о пересорте в ячейке</div></div>
+  <div class="ph"><div class="ph-title">Ревизорам</div><div class="ph-sub">Сообщить о пересорте</div></div>
   <div class="px16 mb10"><button class="btn-primary" onclick="sendRevisor()">+ Новое обращение</button></div>
-  <div class="info-box">ℹ️ После нажатия бот в чате попросит номер ячейки, описание и фото</div>
-  <div class="sec-lbl">История обращений</div>
-  <div class="rev-card" onclick="showModal('Проверено ✅','Ревизор Соколова Е.А. — ячейка B-042 исправлена. Спасибо!','✅')"><div class="rev-photo">📦<div class="rev-st done">Проверено</div></div><div class="rev-body"><div class="rev-from">08.04.2025, 14:32</div><div class="rev-text">Пересорт — арт. 12847 вместо 12848</div><div class="rev-cell">B-042-03</div></div></div>
-  <div class="rev-card" onclick="showModal('Отклонено','Не относится к ревизорам. Обратитесь к старшему кладовщику.','ℹ️')"><div class="rev-photo" style="background:var(--bg3)">🔍<div class="rev-st rej">Отклонено</div></div><div class="rev-body"><div class="rev-from">05.04.2025, 09:15</div><div class="rev-text">Несоответствие упаковки</div><div class="rev-cell">A-118-02</div></div></div>
+  <div class="info-box">ℹ️ После нажатия бот в чате попросит описание и фото. Обращение уйдет напрямую в участок ревизоров.</div>
   <div class="safe-b"></div>
 </div>
 
 <!-- ══ SCREEN: SUGGESTION ══ -->
 <div class="screen" id="s-suggestion">
-  <div class="ph"><div class="ph-title">Предложения</div><div class="ph-sub">Идеи по улучшению склада</div></div>
+  <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению склада</div></div>
   <div class="fb mb14">
     <label class="fl">Ваше предложение</label>
     <textarea class="fta" id="sugText" placeholder="Что улучшить, что закупить, как оптимизировать процесс..." style="min-height:120px"></textarea>
@@ -490,35 +398,15 @@ input,textarea{font-family:inherit}
     <button class="btn-primary" onclick="sendSuggestion('send')">Отправить руководству</button>
     <button class="btn-secondary" onclick="sendSuggestion('photo')">📎 Добавить фото к предложению</button>
   </div>
-  <div class="sec-lbl">Мои предложения</div>
-  <div class="sug-item" onclick="showModal('На рассмотрении','Предложение получено руководством. Статус: на рассмотрении.','💡')"><div class="sug-meta">28.03.2025 · Отбор</div><div class="sug-text">Держатели для ТСД на стеллажах зоны отбора</div><div class="sug-id">#SUG-1743158400 · На рассмотрении</div></div>
-  <div class="sug-item" onclick="showModal('Реализовано ✅','Закуплены зарядные станции. Спасибо!','✅')"><div class="sug-meta">14.02.2025 · Отбор</div><div class="sug-text">Не хватает зарядных станций для ТСД</div><div class="sug-id">#SUG-1739491200 · Реализовано ✅</div></div>
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: SHIFT ══ -->
+<!-- ══ SCREEN: SHIFT (НС) ══ -->
 <div class="screen" id="s-shift">
-  <div class="ph"><div class="ph-title">Управление сменой</div><div class="ph-sub">Для старших и начальников смены</div></div>
-  <div class="shift-toggle">
-    <button class="sh-btn start" onclick="sendData('shift_checkin',{shift_type:'day'})">▶ Начать смену</button>
-    <button class="sh-btn end"   onclick="sendData('shift_checkout',{})">■ Завершить</button>
-  </div>
-  <div class="sec-lbl">Состав смены</div>
-  <div class="stats-tbl"><table><thead><tr><th>Участок</th><th>Осн</th><th>Ср</th><th>∑</th></tr></thead><tbody><tr><td>Приёмка</td><td><span class="sn">11</span></td><td><span class="sn">2</span></td><td><span class="sn">13</span></td></tr><tr><td>Отбор</td><td><span class="sn">20</span></td><td><span class="sn">10</span></td><td><span class="sn">30</span></td></tr><tr><td>ЗОЭ</td><td><span class="sn">10</span></td><td><span class="sn">2</span></td><td><span class="sn">12</span></td></tr><tr><td>Маркировка</td><td><span class="sn">2</span></td><td><span class="sn">2</span></td><td><span class="sn">4</span></td></tr><tr><td>Грузчики</td><td><span class="sn">4</span></td><td><span class="sn">0</span></td><td><span class="sn">4</span></td></tr><tr class="tot"><td>ИТОГО</td><td><span class="sn">73</span></td><td><span class="sn">24</span></td><td><span class="sn">97</span></td></tr></tbody></table></div>
-  <div class="row-btns">
-    <button class="btn-secondary" onclick="sendData('shift_stats',{})">🔄 Обновить</button>
-    <button class="btn-secondary" onclick="showModal('Корректировка','Введите данные в боте командой /adjust','✏️')">✏️ Корректировать</button>
-  </div>
-  <div class="sec-lbl">Зоны</div>
-  <div class="zones-grid">
-    <div class="zc ok"><div class="zc-nm"><span class="zd zd-g"></span>Отбор</div><div class="zc-who">Иванов П.С.</div></div>
-    <div class="zc ok"><div class="zc-nm"><span class="zd zd-g"></span>Приёмка</div><div class="zc-who">Соколова Е.А.</div></div>
-    <div class="zc err"><div class="zc-nm"><span class="zd zd-r"></span>Экспедиция</div><div class="zc-who err">Нет старшего!</div></div>
-    <div class="zc ok"><div class="zc-nm"><span class="zd zd-g"></span>Возвраты</div><div class="zc-who">Кузнецов В.Г.</div></div>
-  </div>
-  <div class="shift-card">
-    <div class="sc-title">Начальник смены</div>
-    <div class="sp"><div class="sp-ava" style="background:var(--red)">НС</div><div><div class="sp-name">Морозов Дмитрий А.</div><div class="sp-role">НС · Активен</div></div><span class="pill p-g" style="margin-left:auto">Online</span></div>
+  <div class="ph"><div class="ph-title">Панель управления</div><div class="ph-sub">Для старших и начальников смены</div></div>
+  <div class="act-row" style="padding-top: 10px;">
+    <button class="act-btn p" onclick="sendDataAndClose('shift_stats', {})"><span class="b-ico">📊</span>Сводка по складу</button>
+    <button class="act-btn s" onclick="sendDataAndClose('shift_force_free', {})"><span class="b-ico">🔓</span>Снять ТСД вручную</button>
   </div>
   <div class="safe-b"></div>
 </div>
@@ -527,9 +415,9 @@ input,textarea{font-family:inherit}
 <nav class="bot-nav" id="botNav">
   <button class="nav-btn active" id="nb-home" onclick="navTab('s-home','nb-home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Главная</span></button>
   <button class="nav-btn" id="nb-tsd"  onclick="navTab('s-tsd','nb-tsd')"><span class="nav-ico">📟</span><span class="nav-lbl">ТСД</span></button>
-  <button class="nav-btn" id="nb-rev"  onclick="navTab('s-revisor','nb-rev')"><span class="nav-ico">🔍</span><span class="nav-lbl">Ревизоры</span><span class="nav-dot"></span></button>
+  <button class="nav-btn" id="nb-rev"  onclick="navTab('s-revisor','nb-rev')"><span class="nav-ico">🔍</span><span class="nav-lbl">Ревизоры</span></button>
   <button class="nav-btn" id="nb-docs" onclick="navTab('s-docs','nb-docs')"><span class="nav-ico">📚</span><span class="nav-lbl">Инструкции</span></button>
-  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Ещё</span></button>
+  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Предложения</span></button>
 </nav>
 
 <!-- SCANNER -->
@@ -539,31 +427,23 @@ input,textarea{font-family:inherit}
   <button class="scan-close" onclick="closeScanner()">Отмена</button>
 </div>
 
-<!-- MODAL -->
-<div class="modal-ov" id="modalOv" onclick="closeModalOutside(event)">
-  <div class="modal-sheet">
-    <div class="sh-handle"></div>
-    <div class="sh-ico" id="mIco">✅</div>
-    <div class="sh-title" id="mTitle">—</div>
-    <div class="sh-desc"  id="mDesc">—</div>
-    <button class="btn-primary mb10" onclick="closeModal()">Понятно</button>
-    <button class="btn-secondary" onclick="closeModal()">Закрыть</button>
-  </div>
-</div>
-
 <script>
 const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
 
-// ── THEME ──────────────────────────────────────────────
+// ❗ ВСТАВЬ СЮДА СВОИ ПУБЛИЧНЫЕ ССЫЛКИ НА CSV ❗
+const CSV_URLS = {
+  tsd: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1474253174&single=true&output=csv",
+  docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv"
+};
+
+// ── THEME ──
 let dark = false;
 function initTheme(){
-  // 1. Telegram theme
   if(tg?.colorScheme) dark = tg.colorScheme==='dark';
   else if(window.matchMedia) dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme();
   tg?.onEvent('themeChanged',()=>{dark=tg.colorScheme==='dark';applyTheme();});
-  window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!tg){dark=e.matches;applyTheme();}});
 }
 function applyTheme(){
   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
@@ -572,10 +452,53 @@ function applyTheme(){
 }
 function toggleTheme(){dark=!dark;applyTheme();tg?.HapticFeedback?.impactOccurred('light');}
 
-// ── NAVIGATION ─────────────────────────────────────────
+// ── DATA SENDING ──
+function sendDataAndClose(action, payload){
+  const d = JSON.stringify({action, ...payload});
+  if(tg?.sendData){
+    tg.sendData(d);
+    tg.close();
+  } else {
+    alert('ДЕМО: Данные отправлены. Окно закроется.\n' + d);
+  }
+}
+
+// ── AUTH ──
+window.addEventListener('DOMContentLoaded',()=>{
+  initTheme(); updateHdr();
+  const p=new URLSearchParams(window.location.search);
+  const role=p.get('role'), name=p.get('name'), zone=p.get('zone');
+  if(role && role!=='none') {
+    loginSuccess({role, name:name||'', zone:zone||'', initials:(name||'??').substring(0,2).toUpperCase()});
+  }
+});
+
+function doAuth(){
+  let v = document.getElementById('wmsInp').value.trim().toUpperCase();
+  if(v.startsWith("20") && v.length > 5) v = v.substring(2); // Отрезаем префикс 20
+  if(v.length < 2) { document.getElementById('wmsInp').focus(); return; }
+  sendDataAndClose('login', {wms: v});
+}
+document.getElementById('wmsInp').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth();});
+
+function loginSuccess(user){
+  document.getElementById('wName').textContent = user.name||'—';
+  document.getElementById('wZone').textContent = user.zone||'—';
+  const rl={'worker':'Кладовщик','senior':'Старший кладовщик','shift_manager':'Начальник смены','revisor':'Ревизор','admin':'Администратор'};
+  document.getElementById('wRole').textContent = rl[user.role]||user.role||'—';
+  document.getElementById('uAva').textContent = user.initials||'??';
+  document.getElementById('uName').textContent = (user.name||'').split(' ')[0];
+  document.getElementById('userChip').style.display = 'flex';
+  document.getElementById('botNav').classList.add('show');
+  
+  if(['senior','shift_manager','admin'].includes(user.role)) document.getElementById('mc-shift').style.display='flex';
+  nav('s-home');
+  tg?.HapticFeedback?.notificationOccurred('success');
+}
+
+// ── NAVIGATION ──
 let cur='s-auth', hist=[];
-const SUB = new Set(['s-tsd-take','s-tsd-give']);
-const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-docs':'Инструкции','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-shift':'Управление сменой'};
+const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-docs':'Инструкции','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-shift':'Панель управления'};
 const TAB_SCREENS = {'s-home':'nb-home','s-tsd':'nb-tsd','s-revisor':'nb-rev','s-docs':'nb-docs','s-suggestion':'nb-more'};
 
 function nav(id){
@@ -585,6 +508,9 @@ function nav(id){
   hist.push(cur); cur=id;
   updateHdr(); window.scrollTo(0,0);
   tg?.HapticFeedback?.selectionChanged();
+  
+  if(id === 's-tsd') loadActiveTSD();
+  if(id === 's-docs') loadDocs();
 }
 function navTab(id,nb){
   nav(id);
@@ -599,148 +525,151 @@ function goBack(){
   cur=prev; updateHdr(); window.scrollTo(0,0);
 }
 function updateHdr(){
-  const logo=document.getElementById('hdr-logo');
-  const titleEl=document.getElementById('hdr-title');
-  const back=document.getElementById('backBtn');
+  const logo=document.getElementById('hdr-logo'), titleEl=document.getElementById('hdr-title'), back=document.getElementById('backBtn');
   const isRoot=cur==='s-auth'||cur==='s-home';
   back.classList.toggle('show',!isRoot);
   if(isRoot){logo.style.display='';titleEl.style.display='none';}
   else{logo.style.display='none';titleEl.style.display='';titleEl.textContent=TITLES[cur]||'';}
   if(tg){isRoot?tg.BackButton.hide():(tg.BackButton.show(),tg.BackButton.onClick(goBack));}
-  // sync bottom nav
   const nb=TAB_SCREENS[cur];
   if(nb){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById(nb)?.classList.add('active');}
 }
 
-// ── AUTH ───────────────────────────────────────────────
-let me = null;
-window.addEventListener('DOMContentLoaded',()=>{
-  initTheme(); updateHdr();
-  // Read params from URL (set by bot's send_webapp_button)
-  const p=new URLSearchParams(window.location.search);
-  const role=p.get('role'),name=p.get('name'),zone=p.get('zone');
-  if(role&&role!=='none'){
-    loginSuccess({role,name:name||'',zone:zone||'',initials:(name||'??').substring(0,2).toUpperCase()});
-  }
-  if(tg?.initDataUnsafe?.user) console.log('TG user:',tg.initDataUnsafe.user.id);
-});
-
-function doAuth(){
-  const v=document.getElementById('wmsInp').value.trim().toUpperCase();
-  if(v.length<2){document.getElementById('wmsInp').focus();return;}
-  sendData('login',{wms:v});
-}
-document.getElementById('wmsInp').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth();});
-
-function loginSuccess(user){
-  me=user;
-  document.getElementById('wName').textContent=user.name||'—';
-  document.getElementById('wZone').textContent=user.zone||'—';
-  const rl={'worker':'Кладовщик','senior':'Старший кладовщик','shift_manager':'Начальник смены','revisor':'Ревизор','admin':'Администратор'};
-  document.getElementById('wRole').textContent=rl[user.role]||user.role||'—';
-  document.getElementById('uAva').textContent=user.initials||'??';
-  document.getElementById('uName').textContent=(user.name||'').split(' ')[0];
-  document.getElementById('userChip').style.display='flex';
-  document.getElementById('botNav').classList.add('show');
-  if(['senior','shift_manager','admin'].includes(user.role)) document.getElementById('mc-shift').style.display='flex';
-  if(['revisor','senior','shift_manager','admin'].includes(user.role)) document.getElementById('revBadge').style.display='';
-  nav('s-home');
-  tg?.HapticFeedback?.notificationOccurred('success');
-}
-
-// ── SEND DATA TO BOT ───────────────────────────────────
-function sendData(action,payload){
-  const d=JSON.stringify({action,...payload});
-  if(tg?.sendData){tg.sendData(d);}
-  else{console.log('sendData:',d);showModal('Демо','В реальном боте данные отправлены: '+d,'📤');}
-}
-
+// ── HANDLERS ──
 function sendTsdTake(){
   const num=document.getElementById('tsdNum').value;
-  if(!num){document.getElementById('tsdNum').focus();return;}
-  const cond=document.querySelector('#condTake .ok, #condTake .warn, #condTake .bad')?.dataset?.cond||'ok';
-  const sel=document.querySelector('#condTake [data-active]');
-  const c=getActiveCond('condTake');
-  sendData('tsd_take',{tsd_number:parseInt(num),condition:c});
+  if(!num) {document.getElementById('tsdNum').focus(); return;}
+  sendDataAndClose('tsd_take', {tsd_number: parseInt(num), condition: getActiveCond('condTake')});
 }
-function sendTsdGive(){
-  const c=getActiveCond('condGive');
-  sendData('tsd_give',{condition:c});
-}
+function sendTsdGive(){ sendDataAndClose('tsd_give', {condition: getActiveCond('condGive')}); }
 function sendFault(){
   const ft=document.querySelector('.ft.sel');
-  const type=ft?ft.querySelector('.ft-lbl').textContent:'Прочее';
-  sendData('fault_start',{fault_type:type});
+  sendDataAndClose('fault_start', {fault_type: ft ? ft.querySelector('.ft-lbl').textContent : 'Прочее'});
 }
-function sendRevisor(){ sendData('revisor_start',{}); }
+function sendRevisor(){ sendDataAndClose('revisor_start', {}); }
 function sendSuggestion(mode){
   const txt=document.getElementById('sugText').value.trim();
-  if(txt.length<10){alert('Опишите предложение подробнее (мин. 10 символов)');return;}
-  sendData('suggestion',{text:txt,mode});
+  if(txt.length<10){alert('Мин. 10 символов');return;}
+  sendDataAndClose('suggestion', {text: txt, mode});
 }
 
-// ── COND PILLS ─────────────────────────────────────────
 function selCond(groupId,el,type){
   document.querySelectorAll('#'+groupId+' .cp').forEach(c=>c.classList.remove('ok','warn','bad'));
-  el.classList.add(type);
-  el.dataset.active='1';
+  el.classList.add(type); el.dataset.active='1';
   tg?.HapticFeedback?.selectionChanged();
 }
 function getActiveCond(groupId){
   const a=document.querySelector('#'+groupId+' .ok, #'+groupId+' .warn, #'+groupId+' .bad');
   if(!a)return'ok';
-  if(a.classList.contains('ok'))return'ok';
-  if(a.classList.contains('warn'))return'warn';
-  return'bad';
+  return a.classList.contains('ok')?'ok': a.classList.contains('warn')?'warn':'bad';
 }
-// init default selection
-document.querySelectorAll('.cond-row').forEach(row=>{
-  const first=row.querySelector('.cp');
-  if(first)first.classList.add('ok');
-});
-
-// ── FAULT TYPE ─────────────────────────────────────────
+document.querySelectorAll('.cond-row').forEach(row=>{const first=row.querySelector('.cp'); if(first)first.classList.add('ok');});
 function selFault(el){
   document.querySelectorAll('.ft').forEach(f=>f.classList.remove('sel'));
-  el.classList.add('sel');
-  tg?.HapticFeedback?.selectionChanged();
+  el.classList.add('sel'); tg?.HapticFeedback?.selectionChanged();
 }
 
-// ── DOCS ───────────────────────────────────────────────
-function filterDocs(el){
+// ── DYNAMIC CSV LOADING (TSD) ──
+function loadActiveTSD() {
+  const wrap = document.getElementById('tsd-list-container');
+  if(!wrap) return;
+  if(!CSV_URLS.tsd.startsWith("http")) { wrap.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Вставьте CSV ссылку в код</div>'; return; }
+  
+  wrap.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+  Papa.parse(CSV_URLS.tsd + "&t=" + Date.now(), {
+    download: true, header: true,
+    complete: function(results) {
+      wrap.innerHTML = '<div class="list-hd">Сейчас на руках</div>';
+      const active = results.data.filter(r => r.take_time && !r.give_time && r.tsd_number);
+      document.getElementById('tsd-inuse').textContent = active.length;
+      
+      if(active.length === 0) {
+        wrap.innerHTML += '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Все ТСД сданы</div>';
+        return;
+      }
+      active.forEach(r => {
+        let pill = r.condition_take === 'ok' ? '<span class="pill p-g">Активен</span>' : '<span class="pill p-o">Сбой</span>';
+        let time = (r.take_time.split(' ')[1] || r.take_time).substring(0, 5);
+        wrap.innerHTML += `<div class="li"><div class="tsd-n">#${r.tsd_number}</div><div class="tsd-i"><div class="tsd-nm">${r.short_name}</div><div class="tsd-zn">${r.zone}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${time}</div><div style="margin-top:3px">${pill}</div></div></div>`;
+      });
+    },
+    error: function() { wrap.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Ошибка загрузки CSV</div>'; }
+  });
+}
+
+// ── DYNAMIC CSV LOADING (DOCS) ──
+let allDocs = [];
+function loadDocs() {
+  const wrap = document.getElementById('docs-list-container');
+  if(!wrap) return;
+  if(!CSV_URLS.docs.startsWith("http")) { wrap.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Вставьте CSV ссылку в код</div>'; return; }
+  
+  if(allDocs.length === 0) {
+    wrap.innerHTML = '<div class="skeleton" style="margin: 0 16px 7px;"></div><div class="skeleton" style="margin: 0 16px 7px;"></div>';
+    Papa.parse(CSV_URLS.docs + "&t=" + Date.now(), {
+      download: true, header: true,
+      complete: function(results) {
+        allDocs = results.data.filter(r => r.title);
+        renderDocs('Все');
+      }
+    });
+  } else {
+    renderDocs('Все');
+  }
+}
+function renderDocs(filterZone) {
+  const wrap = document.getElementById('docs-list-container');
+  wrap.innerHTML = '';
+  const filtered = filterZone === 'Все' ? allDocs : allDocs.filter(d => d.zone === filterZone || d.zone === 'Общие');
+  
+  filtered.forEach(d => {
+    // Если в столбце icon пусто, ставим 📋 по умолчанию
+    let ico = d.icon ? d.icon : '📋';
+    // Если в столбце updated пусто, ничего не пишем
+    let dateStr = d.updated ? ` · ${d.updated}` : '';
+    
+    wrap.innerHTML += `
+      <div class="doc-item" onclick="openDoc('${d.url}')">
+        <div class="doc-icon">${ico}</div>
+        <div>
+          <div class="doc-name">${d.title}</div>
+          <div class="doc-meta">${d.zone}${dateStr} · PDF</div>
+        </div>
+      </div>`;
+  });
+  
+  if(filtered.length === 0) wrap.innerHTML = '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Нет инструкций</div>';
+}
+function filterDocs(el, zone){
   document.querySelectorAll('.zchip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
+  renderDocs(zone);
 }
 function openDoc(url){
-  if(tg?.openLink) tg.openLink(url);
-  else window.open(url,'_blank');
+  if(!url) return;
+  if(tg?.openLink) tg.openLink(url); else window.open(url,'_blank');
 }
 
-// ── SCANNER ────────────────────────────────────────────
+// ── SCANNER ──
 let qrScanner=null;
 function openScanner(){
   document.getElementById('scanOv').classList.add('open');
   if(!qrScanner) qrScanner=new Html5Qrcode('qr-reader');
-  qrScanner.start({facingMode:'environment'},{fps:10,qrbox:{width:240,height:90}},
-    decoded=>{closeScanner();document.getElementById('wmsInp').value=decoded.trim().toUpperCase();setTimeout(doAuth,200);},
+  qrScanner.start({facingMode:'environment'}, {fps: 10, qrbox: {width: 250, height: 100}},
+    decoded => {
+      closeScanner();
+      let res = decoded.trim().toUpperCase();
+      if(res.startsWith("20") && res.length > 5) res = res.substring(2);
+      document.getElementById('wmsInp').value = res;
+      setTimeout(doAuth, 200);
+    },
     ()=>{}
-  ).catch(e=>{alert('Ошибка камеры: '+e);closeScanner();});
+  ).catch(e=>{alert('Ошибка камеры. Выдайте разрешение браузеру.'); closeScanner();});
 }
 function closeScanner(){
   document.getElementById('scanOv').classList.remove('open');
   qrScanner?.stop().catch(()=>{});
 }
-
-// ── MODAL ──────────────────────────────────────────────
-function showModal(title,desc,ico){
-  document.getElementById('mTitle').textContent=title;
-  document.getElementById('mDesc').textContent=desc;
-  document.getElementById('mIco').textContent=ico||'ℹ️';
-  document.getElementById('modalOv').classList.add('open');
-  tg?.HapticFeedback?.impactOccurred('medium');
-}
-function closeModal(){ document.getElementById('modalOv').classList.remove('open'); }
-function closeModalOutside(e){ if(e.target===document.getElementById('modalOv'))closeModal(); }
 </script>
 </body>
 </html>
