@@ -208,6 +208,58 @@ input,textarea{font-family:inherit}
 .mb10{margin-bottom:10px}
 .mb14{margin-bottom:14px}
 .safe-b{height:max(18px,env(safe-area-inset-bottom,18px))}
+
+/* ── LEADERS ── */
+.leader-card {
+    background: var(--card);
+    border: 1px solid rgba(255,159,10,.3);
+    border-radius: var(--r);
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(255,159,10,.08);
+}
+.leader-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 80px;
+    opacity: 0.04;
+    transform: rotate(-10deg);
+    pointer-events: none;
+}
+.leader-hdr {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.leader-ava {
+    width: 44px;
+    height: 44px;
+    background: var(--red);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.leader-info { flex: 1; }
+.leader-fio { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+.leader-quote {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+    font-style: italic;
+    position: relative;
+    padding-left: 10px;
+    border-left: 2px solid var(--orange);
+}  
 </style>
 </head>
 <body>
@@ -280,6 +332,11 @@ input,textarea{font-family:inherit}
     <div class="mc wide" onclick="nav('s-suggestion')">
       <div class="mc-icon ci-t">💡</div>
       <div class="mc-text"><div class="mc-title">Журнал предложений</div><div class="mc-desc">Идеи по улучшению работы склада</div></div>
+      <div class="mc-arr">›</div>
+    </div>
+    <div class="mc wide" onclick="nav('s-leaders')">
+      <div class="mc-icon ci-o">🏆</div>
+      <div class="mc-text"><div class="mc-title">Лидеры квартала</div><div class="mc-desc">Лучшие сотрудники склада</div></div>
       <div class="mc-arr">›</div>
     </div>
     <div class="mc wide" id="mc-shift" style="display:none" onclick="nav('s-shift')">
@@ -401,6 +458,16 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
+<!-- ══ SCREEN: LEADERS ══ -->
+<div class="screen" id="s-leaders">
+  <div class="ph"><div class="ph-title">Лидеры квартала</div><div class="ph-sub">Гордость ПЛ · Отмечаем лучшие результаты</div></div>
+  <div id="leaders-list-container" class="px16">
+    <div class="skeleton" style="height:100px; margin-bottom:12px;"></div>
+    <div class="skeleton" style="height:140px; margin-bottom:12px;"></div>
+  </div>
+  <div class="safe-b"></div>
+</div>
+  
 <!-- ══ SCREEN: SHIFT (НС) ══ -->
 <div class="screen" id="s-shift">
   <div class="ph"><div class="ph-title">Панель управления</div><div class="ph-sub">Для старших и начальников смены</div></div>
@@ -434,7 +501,8 @@ if(tg){tg.ready();tg.expand();}
 // ❗ ВСТАВЬ СЮДА СВОИ ПУБЛИЧНЫЕ ССЫЛКИ НА CSV ❗
 const CSV_URLS = {
   tsd: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1474253174&single=true&output=csv",
-  docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv"
+  docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
+  leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
 };
 
 // ── THEME ──
@@ -511,6 +579,7 @@ function nav(id){
   
   if(id === 's-tsd') loadActiveTSD();
   if(id === 's-docs') loadDocs();
+  if(id === 's-leaders') loadLeaders();
 }
 function navTab(id,nb){
   nav(id);
@@ -650,6 +719,46 @@ function openDoc(url){
   if(tg?.openLink) tg.openLink(url); else window.open(url,'_blank');
 }
 
+// ── DYNAMIC CSV LOADING (LEADERS) ──
+let leadersLoaded = false;
+function loadLeaders() {
+  const wrap = document.getElementById('leaders-list-container');
+  if(!wrap || leadersLoaded) return;
+  if(!CSV_URLS.leaders.startsWith("http")) { wrap.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Вставьте CSV ссылку в код</div>'; return; }
+
+  Papa.parse(CSV_URLS.leaders + "&t=" + Date.now(), {
+    download: true, header: true,
+    complete: function(results) {
+      wrap.innerHTML = '';
+      const data = results.data.filter(r => r.fio);
+      if(data.length === 0) {
+         wrap.innerHTML = '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Список пока пуст</div>';
+         return;
+      }
+      data.forEach(d => {
+        // Вырезаем инициалы (Боровская Светлана -> БС)
+        let parts = d.fio.split(' ').filter(p=>p);
+        let init = parts.length > 1 ? (parts[0][0]+parts[1][0]).toUpperCase() : (parts[0]?.[0] || '?').toUpperCase();
+
+        wrap.innerHTML += `
+          <div class="leader-card">
+            <div class="leader-bg-icon">🏆</div>
+            <div class="leader-hdr">
+              <div class="leader-ava">${init}</div>
+              <div class="leader-info">
+                <div class="leader-fio">${d.fio}</div>
+                <span class="pill p-o">${d.zone}</span>
+              </div>
+            </div>
+            <div class="leader-quote">«${d.text}»</div>
+          </div>
+        `;
+      });
+      leadersLoaded = true; // Загружаем только один раз за сессию для скорости
+    }
+  });
+}  
+  
 // ── SCANNER ──
 let qrScanner=null;
 function openScanner(){
