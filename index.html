@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ПЛ Склад</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!-- Сканер QR и штрих-кодов -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<!-- Парсер CSV (для прямого чтения из Google Sheets) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
@@ -31,7 +29,6 @@ body{font-family:'Golos Text',system-ui,sans-serif;background:var(--bg);color:va
 button{font-family:inherit;border:none;cursor:pointer;background:none}
 input,textarea{font-family:inherit}
 
-/* ── LOGO ── */
 .pl-logo{display:flex;align-items:center;gap:9px;user-select:none}
 .pl-letters{display:flex;align-items:baseline;gap:1px}
 .pl-p{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:900;color:var(--text);line-height:1;transition:color .25s}
@@ -40,7 +37,6 @@ input,textarea{font-family:inherit}
 .pl-main{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;color:var(--text);letter-spacing:.5px;text-transform:uppercase;transition:color .25s}
 .pl-sub{font-size:9px;color:var(--text3);letter-spacing:.3px}
 
-/* ── HEADER ── */
 .hdr{position:sticky;top:0;z-index:90;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;min-height:52px}
 .hdr-left{display:flex;align-items:center;gap:8px}
 .back-btn{width:30px;height:30px;border-radius:50%;background:var(--bg3);display:none;align-items:center;justify-content:center;font-size:17px;color:var(--text);transition:background .15s;flex-shrink:0}
@@ -53,12 +49,10 @@ input,textarea{font-family:inherit}
 .user-chip{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 9px 3px 4px;font-size:11px;color:var(--text2);font-weight:500}
 .u-ava{width:20px;height:20px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0}
 
-/* ── SCREENS ── */
 .screen{display:none;animation:fadeUp .2s ease}
 .screen.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── BOTTOM NAV ── */
 .bot-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:none;z-index:90;padding-bottom:env(safe-area-inset-bottom,0)}
 .bot-nav.show{display:flex}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px 7px;cursor:pointer;position:relative;transition:opacity .1s;border:none;background:none}
@@ -68,7 +62,6 @@ input,textarea{font-family:inherit}
 .nav-btn.active .nav-ico{transform:scale(1.1)}
 .nav-btn.active .nav-lbl{color:var(--red)}
 
-/* ── AUTH ── */
 .auth-wrap{min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:0}
 .auth-big-logo .pl-p,.auth-big-logo .pl-l{font-size:52px}
 .auth-tagline{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:8px 0 28px;text-align:center}
@@ -88,17 +81,14 @@ input,textarea{font-family:inherit}
 .btn-secondary{width:100%;padding:12px;background:var(--bg3);color:var(--text);border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--border);transition:background .15s}
 .btn-secondary:active{background:var(--border)}
 
-/* ── WELCOME CARD ── */
 .welcome-card{margin:12px 16px 0;background:linear-gradient(135deg,var(--red-h) 0%,var(--red) 60%,#e8353d 100%);border-radius:var(--r3);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 18px rgba(200,39,46,.28)}
 .w-ava{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .w-name{font-size:14px;font-weight:600;color:#fff}
 .w-zone{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
 .w-role{display:inline-block;background:rgba(255,255,255,.2);border-radius:5px;font-size:9px;padding:2px 7px;color:#fff;margin-top:4px;font-weight:600;letter-spacing:.3px}
 
-/* ── SECTION LABEL ── */
 .sec-lbl{padding:14px 16px 7px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px}
 
-/* ── MENU GRID ── */
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px}
 .mc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px 13px;cursor:pointer;display:flex;flex-direction:column;gap:7px;box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden}
 .mc:active{transform:scale(.96);box-shadow:none}
@@ -111,19 +101,16 @@ input,textarea{font-family:inherit}
 .mc-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
 .mc-desc{font-size:11px;color:var(--text3);line-height:1.4}
 
-/* ── PAGE HEAD ── */
 .ph{padding:14px 16px 3px}
 .ph-title{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
 .ph-sub{font-size:12px;color:var(--text3);margin-top:3px}
 
-/* ── TSD STATS ── */
 .tsd-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;padding:10px 16px}
 .tsd-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 9px;text-align:center}
 .ts-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700}
 .ts-lbl{font-size:9px;color:var(--text3);margin-top:2px}
 .c-g{color:var(--green)} .c-o{color:var(--orange)} .c-r{color:var(--red)}
 
-/* ── ACTION ROW ── */
 .act-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
 .act-btn{padding:15px 12px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;font-weight:600;transition:transform .1s,opacity .1s; text-align:center; line-height:1.3}
 .act-btn:active{transform:scale(.96);opacity:.85}
@@ -131,7 +118,6 @@ input,textarea{font-family:inherit}
 .act-btn.p{background:var(--red);color:#fff}
 .act-btn.s{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow)}
 
-/* ── LIST & SKELETON ── */
 .list-wrap{padding:0 16px}
 .list-hd{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
 .li{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:11px;}
@@ -154,7 +140,6 @@ input,textarea{font-family:inherit}
     100% { background-position: -200% 0; }
 }
 
-/* ── PILLS & BADGES ── */
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
 .p-g{background:rgba(48,209,88,.15);color:var(--green);border:1px solid rgba(48,209,88,.3)}
@@ -162,7 +147,6 @@ input,textarea{font-family:inherit}
 .p-r{background:rgba(200,39,46,.15);color:var(--red);border:1px solid rgba(200,39,46,.3)}
 .p-y{background:rgba(255,204,0,.15);color:#D4A000;border:1px solid rgba(255,204,0,.3)}
 
-/* ── FORM ── */
 .fb{padding:0 16px 11px}
 .fl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;display:block}
 .fi{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 13px;font-size:15px;font-weight:600;color:var(--text);outline:none;transition:border-color .15s}
@@ -176,7 +160,6 @@ input,textarea{font-family:inherit}
 .cp.warn{background:rgba(255,159,10,.1);border-color:var(--orange);color:var(--orange)}
 .cp.bad{background:var(--red-s);border-color:var(--red);color:var(--red)}
 
-/* ── FAULT GRID ── */
 .fault-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
 .ft{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:15px 11px;text-align:center;cursor:pointer;transition:all .15s}
 .ft:active,.ft.sel{border-color:var(--red);background:var(--red-s)}
@@ -184,14 +167,12 @@ input,textarea{font-family:inherit}
 .ft .ft-lbl{font-size:12px;font-weight:600}
 .ft .ft-sub{font-size:10px;color:var(--text3);margin-top:3px}
 
-/* ── SUGGESTIONS CARDS ── */
 .sug-card {background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
 .sug-text {font-size:13px;line-height:1.4;margin:8px 0;color:var(--text);}
 .sug-acts {display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .btn-txt {font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px;background:var(--bg3);color:var(--text2);}
 .btn-txt.danger {color:var(--red); background:var(--red-s);}
 
-/* ── DOCS ── */
 .chip-scroll{display:flex;gap:7px;padding:9px 16px;overflow-x:auto;scrollbar-width:none}
 .chip-scroll::-webkit-scrollbar{display:none}
 .zchip{padding:6px 13px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .15s}
@@ -203,10 +184,8 @@ input,textarea{font-family:inherit}
 .doc-meta{font-size:10px;color:var(--text3);margin-top:2px}
 .active-cat {background: var(--red) !important; color: #fff !important; border-color: var(--red) !important;}
   
-/* ── INFO BOX ── */
 .info-box{margin:0 16px 13px;background:rgba(10,132,255,.08);border-left:3px solid var(--blue);border-radius:0 var(--r2) var(--r2) 0;padding:9px 13px;font-size:11px;color:var(--text2);line-height:1.5}
 
-/* ── SCANNER ── */
 .scan-ov{display:none;position:fixed;inset:0;background:#000;z-index:300;flex-direction:column;align-items:center;justify-content:center}
 .scan-ov.open{display:flex}
 #qr-reader{width:100%; min-height:300px; object-fit:cover; border-radius:12px; overflow:hidden; background:#111}
@@ -219,7 +198,6 @@ input,textarea{font-family:inherit}
 .mb14{margin-bottom:14px}
 .safe-b{height:max(18px,env(safe-area-inset-bottom,18px))}
 
-/* ── LEADERS ── */
 .leader-card {
     background: var(--card);
     border: 1px solid rgba(255,159,10,.3);
@@ -240,7 +218,6 @@ input,textarea{font-family:inherit}
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-left">
     <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
@@ -261,7 +238,6 @@ input,textarea{font-family:inherit}
   </div>
 </div>
 
-<!-- ══ SCREEN: AUTH ══ -->
 <div class="screen active" id="s-auth">
   <div class="auth-wrap">
     <div class="auth-big-logo pl-letters mb10"><span class="pl-p">П</span><span class="pl-l">Л</span></div>
@@ -277,7 +253,6 @@ input,textarea{font-family:inherit}
   </div>
 </div>
 
-<!-- ══ SCREEN: HOME ══ -->
 <div class="screen" id="s-home">
   <div class="welcome-card">
     <div class="w-ava">👤</div>
@@ -324,10 +299,9 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: TSD ══ -->
 <div class="screen" id="s-tsd">
   <div class="ph"><div class="ph-title">Журнал ТСД</div><div class="ph-sub">Регистрация терминалов сбора данных</div></div>
-  <div class="tsd-stats">
+  <div class="tsd-stats mb10">
     <div class="tsd-stat" style="border-color:var(--red); background:var(--red-s)">
       <div class="ts-num c-r" id="tsd-mine">Нет</div>
       <div class="ts-lbl" style="color:var(--red)">Мой терминал</div>
@@ -341,11 +315,16 @@ input,textarea{font-family:inherit}
     <button class="act-btn p" onclick="nav('s-tsd-take')"><span class="b-ico">📥</span>Взять ТСД</button>
     <button class="act-btn s" onclick="nav('s-tsd-give')"><span class="b-ico">📤</span>Сдать ТСД</button>
   </div>
+  
+  <div class="sec-lbl">Терминалы на руках</div>
+  <div class="px16 mb14" id="tsd-list-container">
+    <div class="skeleton"></div>
+  </div>
+
   <div class="info-box">ℹ️ В этом разделе вы можете закрепить за собой ТСД или сдать его после смены. Списки активных терминалов обновляются в реальном времени.</div>
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: TSD TAKE ══ -->
 <div class="screen" id="s-tsd-take">
   <div class="ph"><div class="ph-title">Взять ТСД</div><div class="ph-sub">Укажите номер терминала</div></div>
   <div class="fb mb14">
@@ -365,7 +344,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: TSD GIVE ══ -->
 <div class="screen" id="s-tsd-give">
   <div class="ph"><div class="ph-title">Сдать ТСД</div><div class="ph-sub">Зарегистрируйте возврат</div></div>
   <div class="fb">
@@ -381,7 +359,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: FAULT ══ -->
 <div class="screen" id="s-fault">
   <div class="ph"><div class="ph-title">Неисправность</div><div class="ph-sub">Сообщить о поломке</div></div>
   <div class="sec-lbl">Тип оборудования</div>
@@ -396,7 +373,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: DOCS ══ -->
 <div class="screen" id="s-docs">
   <div class="ph"><div class="ph-title">Инструкции</div><div class="ph-sub">Регламенты и материалы</div></div>
   <div class="row-btns" style="padding: 10px 16px;">
@@ -416,15 +392,19 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: REVISOR ══ -->
 <div class="screen" id="s-revisor">
   <div class="ph"><div class="ph-title">Ревизорам</div><div class="ph-sub">Сообщить о пересорте</div></div>
+  
+  <div class="tsd-stats mb14" id="rev-stats" style="display:none">
+    <div class="tsd-stat"><div class="ts-num c-o" id="rs-open">0</div><div class="ts-lbl">Открыто за месяц</div></div>
+    <div class="tsd-stat"><div class="ts-num c-g" id="rs-closed">0</div><div class="ts-lbl">Решено за месяц</div></div>
+  </div>
+
   <div class="px16 mb10"><button class="btn-primary" onclick="sendRevisor()">+ Новое обращение</button></div>
   <div class="info-box">ℹ️ После нажатия бот в чате попросит описание и фото. Обращение уйдет напрямую в участок ревизоров.</div>
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: SUGGESTION (НОВЫЙ ДИЗАЙН) ══ -->
 <div class="screen" id="s-suggestion">
   <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению работы склада</div></div>
   <div class="px16 mb14">
@@ -443,7 +423,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: LEADERS ══ -->
 <div class="screen" id="s-leaders">
   <div class="ph"><div class="ph-title">Лидеры квартала</div><div class="ph-sub">Гордость ПЛ · Отмечаем лучшие результаты</div></div>
   <div id="leaders-list-container" class="px16">
@@ -453,7 +432,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
   
-<!-- ══ SCREEN: SHIFT (НС) ══ -->
 <div class="screen" id="s-shift">
   <div class="ph"><div class="ph-title">Панель управления</div><div class="ph-sub">Для старших и начальников смены</div></div>
   <div class="act-row" style="padding-top: 10px;">
@@ -463,7 +441,6 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bot-nav" id="botNav">
   <button class="nav-btn active" id="nb-home" onclick="navTab('s-home','nb-home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Главная</span></button>
   <button class="nav-btn" id="nb-tsd"  onclick="navTab('s-tsd','nb-tsd')"><span class="nav-ico">📟</span><span class="nav-lbl">ТСД</span></button>
@@ -472,7 +449,6 @@ input,textarea{font-family:inherit}
   <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Идеи</span></button>
 </nav>
 
-<!-- SCANNER -->
 <div class="scan-ov" id="scanOv">
   <div class="scan-hint">Наведите на штрих-код бейджа</div>
   <div id="qr-reader"></div>
@@ -483,13 +459,11 @@ input,textarea{font-family:inherit}
 const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
 
-// ❗ ВСТАВЬ СЮДА СВОИ ПУБЛИЧНЫЕ ССЫЛКИ НА CSV ❗
 const CSV_URLS = {
   docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
   leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
 };
 
-// ── THEME ──
 let dark = false;
 function initTheme(){
   if(tg?.colorScheme) dark = tg.colorScheme==='dark';
@@ -504,7 +478,6 @@ function applyTheme(){
 }
 function toggleTheme(){dark=!dark;applyTheme();tg?.HapticFeedback?.impactOccurred('light');}
 
-// ── DATA SENDING ──
 function sendDataAndClose(action, payload){
   const d = JSON.stringify({action, ...payload});
   if(tg?.sendData){
@@ -515,7 +488,6 @@ function sendDataAndClose(action, payload){
   }
 }
 
-// ── DECODE PAYLOAD (ZERO-PORT API) ──
 function decodePayload() {
   const p = new URLSearchParams(window.location.search).get('d');
   if(!p || p === 'none') return null;
@@ -523,21 +495,18 @@ function decodePayload() {
     let b64 = p.replace(/-/g, '+').replace(/_/g, '/');
     let pad = b64.length % 4;
     if(pad) b64 += '='.repeat(4 - pad);
-    // Используем правильный декодер для поддержки Кириллицы
     const bytes = Uint8Array.from(window.atob(b64), c => c.charCodeAt(0));
     const jsonStr = new TextDecoder().decode(bytes);
     return JSON.parse(jsonStr);
   } catch(e) { console.error("Payload decode error", e); return null; }
 }
 
-// ── AUTH & INITIALIZATION ──
 window.addEventListener('DOMContentLoaded',()=>{
   initTheme(); updateHdr();
   
   const payloadData = decodePayload();
   
   if(payloadData && payloadData.u) {
-    // Вход через Base64 Payload
     const user = {
         role: payloadData.u.role, 
         name: payloadData.u.name || '', 
@@ -547,7 +516,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     loginSuccess(user);
     renderDashboard(payloadData);
   } else {
-    // Вход по-старому (Fallback)
     const p=new URLSearchParams(window.location.search);
     const role=p.get('role'), name=p.get('name'), zone=p.get('zone');
     if(role && role!=='none') {
@@ -579,12 +547,58 @@ function loginSuccess(user){
   tg?.HapticFeedback?.notificationOccurred('success');
 }
 
-// ── RENDER DYNAMIC DATA ──
+// ── Рендеринг и Живые Таймеры ──
+let tsdInterval = null;
+function startTsdTimers() {
+    if(tsdInterval) clearInterval(tsdInterval);
+    function updateTimers() {
+        document.querySelectorAll('.tsd-timer').forEach(el => {
+            let tStr = el.getAttribute('data-time');
+            if(!tStr) return;
+            // Safari iOS fix: заменяем '-' на '/' и принудительно задаем часовой пояс Минска (UTC+3)
+            let dt = new Date(tStr.replace(/-/g, '/') + ' GMT+0300');
+            let diffMs = Date.now() - dt.getTime();
+            if(diffMs < 0) diffMs = 0;
+            
+            let mins = Math.floor(diffMs / 60000);
+            let h = Math.floor(mins / 60);
+            let m = mins % 60;
+            
+            // Цветовая индикация: больше 10 часов - желтый, больше 11 - красный
+            let cls = h >= 11 ? 'p-r' : (h >= 10 ? 'p-o' : 'p-y');
+            el.className = `pill ${cls} tsd-timer`;
+            el.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        });
+    }
+    updateTimers();
+    tsdInterval = setInterval(updateTimers, 60000);
+}
+
 function renderDashboard(data) {
-    // 1. TSD
+    // 1. TSD (добавлен список и таймеры)
     if(data.tsd) {
         document.getElementById('tsd-inuse').textContent = data.tsd.in_use || "0";
         document.getElementById('tsd-mine').textContent = data.tsd.mine ? `#${data.tsd.mine}` : "Нет";
+
+        const tsdWrap = document.getElementById('tsd-list-container');
+        if(data.tsd.list && data.tsd.list.length > 0) {
+            let html = '';
+            data.tsd.list.forEach(t => {
+                html += `
+                <div class="li">
+                  <div class="tsd-n">#${t.tsd_number}</div>
+                  <div class="tsd-i">
+                    <div class="tsd-nm">${t.employee_name}</div>
+                    <div class="tsd-zn">${t.zone}</div>
+                  </div>
+                  <div class="pill p-y tsd-timer" data-time="${t.take_time}">00:00</div>
+                </div>`;
+            });
+            tsdWrap.innerHTML = html;
+            startTsdTimers();
+        } else {
+            tsdWrap.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Все терминалы свободны.</div>';
+        }
     }
 
     // 2. SUGGESTIONS
@@ -592,7 +606,6 @@ function renderDashboard(data) {
         const pubWrap = document.getElementById('pub-ideas-container');
         const myWrap = document.getElementById('my-ideas-container');
         
-        // Публичные
         let pubHtml = '';
         if(data.sug.pub && data.sug.pub.length > 0) {
             data.sug.pub.forEach(s => {
@@ -603,7 +616,6 @@ function renderDashboard(data) {
         }
         pubWrap.innerHTML = pubHtml;
 
-        // Мои
         let myHtml = '';
         const statuses = {
             'pending':'<span class="pill p-y">🟡 На рассмотрении</span>', 
@@ -628,6 +640,13 @@ function renderDashboard(data) {
         }
         myWrap.innerHTML = myHtml;
     }
+
+    // 3. REVISOR STATS (новый блок)
+    if(data.rev) {
+        document.getElementById('rev-stats').style.display = 'grid';
+        document.getElementById('rs-open').textContent = data.rev.open || "0";
+        document.getElementById('rs-closed').textContent = data.rev.closed || "0";
+    }
 }
 
 function confirmDelete(id) {
@@ -637,7 +656,6 @@ function confirmDelete(id) {
     }
 }
 
-// ── NAVIGATION ──
 let cur='s-auth', hist=[];
 const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-docs':'Инструкции','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-shift':'Панель управления'};
 const TAB_SCREENS = {'s-home':'nb-home','s-tsd':'nb-tsd','s-revisor':'nb-rev','s-docs':'nb-docs','s-suggestion':'nb-more'};
@@ -676,7 +694,6 @@ function updateHdr(){
   if(nb){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById(nb)?.classList.add('active');}
 }
 
-// ── HANDLERS ──
 function sendTsdTake(){
   const num=document.getElementById('tsdNum').value;
   if(!num) {document.getElementById('tsdNum').focus(); return;}
@@ -705,7 +722,6 @@ function selFault(el){
   el.classList.add('sel'); tg?.HapticFeedback?.selectionChanged();
 }
 
-// ── DYNAMIC CSV LOADING (DOCS) ──
 let allDocs =[];
 let curCategory = 'process'; 
 let curZone = 'Все';
@@ -777,7 +793,6 @@ function openDoc(url){
   if(tg?.openLink) tg.openLink(url); else window.open(url,'_blank');
 }
 
-// ── DYNAMIC CSV LOADING (LEADERS) ──
 let leadersLoaded = false;
 function loadLeaders() {
   const wrap = document.getElementById('leaders-list-container');
@@ -815,7 +830,6 @@ function loadLeaders() {
   });
 }  
   
-// ── SCANNER ──
 let qrScanner=null;
 function openScanner(){
   document.getElementById('scanOv').classList.add('open');
