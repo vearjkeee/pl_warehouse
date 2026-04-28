@@ -589,7 +589,7 @@ function renderDashboard(data) {
                   <div class="tsd-n">#${t.tsd_number}</div>
                   <div class="tsd-i">
                     <div class="tsd-nm">${t.employee_name}</div>
-                    <div class="tsd-zn">${t.zone}</div>
+                    <div class="tsd-zn">${t.zone} · взял в ${t.take_time ? t.take_time.substring(11,16) : '—'}</div>
                   </div>
                   <div class="pill p-y tsd-timer" data-time="${t.take_time}">00:00</div>
                 </div>`;
@@ -641,12 +641,12 @@ function renderDashboard(data) {
         myWrap.innerHTML = myHtml;
     }
 
-    // 3. REVISOR STATS (новый блок)
-    if(data.rev) {
-        document.getElementById('rev-stats').style.display = 'grid';
-        document.getElementById('rs-open').textContent = data.rev.open || "0";
-        document.getElementById('rs-closed').textContent = data.rev.closed || "0";
-    }
+    // 3. REVISOR STATS — FIX #3: показываем данные за 30 дней (приходят с бота)
+    // Данные приходят всегда — отображаем блок даже если нулевые
+    const rev = data.rev || {};
+    document.getElementById('rev-stats').style.display = 'grid';
+    document.getElementById('rs-open').textContent = rev.open ?? "0";
+    document.getElementById('rs-closed').textContent = rev.closed ?? "0";
 }
 
 function confirmDelete(id) {
