@@ -117,7 +117,7 @@ input,textarea{font-family:inherit}
 .ph-sub{font-size:12px;color:var(--text3);margin-top:3px}
 
 /* ── TSD STATS ── */
-.tsd-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 16px}
+.tsd-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;padding:10px 16px}
 .tsd-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 9px;text-align:center}
 .ts-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700}
 .ts-lbl{font-size:9px;color:var(--text3);margin-top:2px}
@@ -154,11 +154,13 @@ input,textarea{font-family:inherit}
     100% { background-position: -200% 0; }
 }
 
-/* ── PILLS ── */
+/* ── PILLS & BADGES ── */
 .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
 .p-g{background:rgba(48,209,88,.15);color:var(--green);border:1px solid rgba(48,209,88,.3)}
 .p-o{background:rgba(255,159,10,.15);color:var(--orange);border:1px solid rgba(255,159,10,.3)}
+.p-r{background:rgba(200,39,46,.15);color:var(--red);border:1px solid rgba(200,39,46,.3)}
+.p-y{background:rgba(255,204,0,.15);color:#D4A000;border:1px solid rgba(255,204,0,.3)}
 
 /* ── FORM ── */
 .fb{padding:0 16px 11px}
@@ -182,6 +184,13 @@ input,textarea{font-family:inherit}
 .ft .ft-lbl{font-size:12px;font-weight:600}
 .ft .ft-sub{font-size:10px;color:var(--text3);margin-top:3px}
 
+/* ── SUGGESTIONS CARDS ── */
+.sug-card {background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
+.sug-text {font-size:13px;line-height:1.4;margin:8px 0;color:var(--text);}
+.sug-acts {display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.btn-txt {font-size:11px;font-weight:600;padding:6px 12px;border-radius:8px;background:var(--bg3);color:var(--text2);}
+.btn-txt.danger {color:var(--red); background:var(--red-s);}
+
 /* ── DOCS ── */
 .chip-scroll{display:flex;gap:7px;padding:9px 16px;overflow-x:auto;scrollbar-width:none}
 .chip-scroll::-webkit-scrollbar{display:none}
@@ -192,11 +201,7 @@ input,textarea{font-family:inherit}
 .doc-icon{width:38px;height:38px;background:var(--red-s);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .doc-name{font-size:12px;font-weight:500}
 .doc-meta{font-size:10px;color:var(--text3);margin-top:2px}
-.active-cat {
-    background: var(--red) !important;
-    color: #fff !important;
-    border-color: var(--red) !important;
-}
+.active-cat {background: var(--red) !important; color: #fff !important; border-color: var(--red) !important;}
   
 /* ── INFO BOX ── */
 .info-box{margin:0 16px 13px;background:rgba(10,132,255,.08);border-left:3px solid var(--blue);border-radius:0 var(--r2) var(--r2) 0;padding:9px 13px;font-size:11px;color:var(--text2);line-height:1.5}
@@ -225,46 +230,12 @@ input,textarea{font-family:inherit}
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(255,159,10,.08);
 }
-.leader-bg-icon {
-    position: absolute;
-    right: -10px;
-    bottom: -15px;
-    font-size: 80px;
-    opacity: 0.04;
-    transform: rotate(-10deg);
-    pointer-events: none;
-}
-.leader-hdr {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-.leader-ava {
-    width: 44px;
-    height: 44px;
-    background: var(--red);
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 700;
-    flex-shrink: 0;
-}
+.leader-bg-icon {position: absolute; right: -10px; bottom: -15px; font-size: 80px; opacity: 0.04; transform: rotate(-10deg); pointer-events: none;}
+.leader-hdr {display: flex; align-items: center; gap: 12px; margin-bottom: 12px;}
+.leader-ava {width: 44px; height: 44px; background: var(--red); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-family: 'Unbounded', sans-serif; font-weight: 700; flex-shrink: 0;}
 .leader-info { flex: 1; }
 .leader-fio { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
-.leader-quote {
-    font-size: 12px;
-    color: var(--text2);
-    line-height: 1.5;
-    font-style: italic;
-    position: relative;
-    padding-left: 10px;
-    border-left: 2px solid var(--orange);
-}  
+.leader-quote {font-size: 12px; color: var(--text2); line-height: 1.5; font-style: italic; position: relative; padding-left: 10px; border-left: 2px solid var(--orange);}  
 </style>
 </head>
 <body>
@@ -357,17 +328,20 @@ input,textarea{font-family:inherit}
 <div class="screen" id="s-tsd">
   <div class="ph"><div class="ph-title">Журнал ТСД</div><div class="ph-sub">Регистрация терминалов сбора данных</div></div>
   <div class="tsd-stats">
-    <div class="tsd-stat"><div class="ts-num c-o" id="tsd-inuse">-</div><div class="ts-lbl">На руках</div></div>
+    <div class="tsd-stat" style="border-color:var(--red); background:var(--red-s)">
+      <div class="ts-num c-r" id="tsd-mine">Нет</div>
+      <div class="ts-lbl" style="color:var(--red)">Мой терминал</div>
+    </div>
+    <div class="tsd-stat">
+      <div class="ts-num c-o" id="tsd-inuse">-</div>
+      <div class="ts-lbl">Всего на руках</div>
+    </div>
   </div>
   <div class="act-row">
     <button class="act-btn p" onclick="nav('s-tsd-take')"><span class="b-ico">📥</span>Взять ТСД</button>
     <button class="act-btn s" onclick="nav('s-tsd-give')"><span class="b-ico">📤</span>Сдать ТСД</button>
   </div>
-  <!-- Динамический список из CSV -->
-  <div class="list-wrap" id="tsd-list-container">
-    <div class="skeleton"></div>
-    <div class="skeleton"></div>
-  </div>
+  <div class="info-box">ℹ️ В этом разделе вы можете закрепить за собой ТСД или сдать его после смены. Списки активных терминалов обновляются в реальном времени.</div>
   <div class="safe-b"></div>
 </div>
 
@@ -425,14 +399,10 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: DOCS ══ -->
 <div class="screen" id="s-docs">
   <div class="ph"><div class="ph-title">Инструкции</div><div class="ph-sub">Регламенты и материалы</div></div>
-  
-  <!-- НОВЫЕ КНОПКИ КАТЕГОРИЙ -->
   <div class="row-btns" style="padding: 10px 16px;">
     <button class="btn-secondary active-cat" id="cat-process" onclick="setCategory('process')" style="flex:1; border-radius: 10px; font-size: 11px;">📘 Процессы</button>
     <button class="btn-secondary" id="cat-hse" onclick="setCategory('hse')" style="flex:1; border-radius: 10px; font-size: 11px;">🦺 Охрана труда</button>
   </div>
-
-  <!-- ЧИПЫ ЗОН -->
   <div class="chip-scroll">
     <div class="zchip active" onclick="filterDocsByZone(this, 'Все')">Все</div>
     <div class="zchip" onclick="filterDocsByZone(this, 'Отбор')">Отбор</div>
@@ -440,7 +410,6 @@ input,textarea{font-family:inherit}
     <div class="zchip" onclick="filterDocsByZone(this, 'Экспедиция')">Экспедиция</div>
     <div class="zchip" onclick="filterDocsByZone(this, 'Возвраты')">Возвраты</div>
   </div>
-
   <div id="docs-list-container">
     <div class="skeleton" style="margin: 0 16px 7px;"></div>
   </div>
@@ -455,16 +424,21 @@ input,textarea{font-family:inherit}
   <div class="safe-b"></div>
 </div>
 
-<!-- ══ SCREEN: SUGGESTION ══ -->
+<!-- ══ SCREEN: SUGGESTION (НОВЫЙ ДИЗАЙН) ══ -->
 <div class="screen" id="s-suggestion">
-  <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению склада</div></div>
-  <div class="fb mb14">
-    <label class="fl">Ваше предложение</label>
-    <textarea class="fta" id="sugText" placeholder="Что улучшить, что закупить, как оптимизировать процесс..." style="min-height:120px"></textarea>
+  <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению работы склада</div></div>
+  <div class="px16 mb14">
+    <button class="btn-primary" onclick="sendDataAndClose('suggestion_start', {})">💡 + Новая идея</button>
   </div>
-  <div style="padding:0 16px;display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
-    <button class="btn-primary" onclick="sendSuggestion('send')">Отправить руководству</button>
-    <button class="btn-secondary" onclick="sendSuggestion('photo')">📎 Добавить фото к предложению</button>
+  
+  <div class="sec-lbl">Одобрено руководством</div>
+  <div class="px16 mb14" id="pub-ideas-container">
+    <div class="skeleton" style="height:60px;"></div>
+  </div>
+
+  <div class="sec-lbl">Мои идеи</div>
+  <div class="px16" id="my-ideas-container">
+    <div class="skeleton" style="height:80px;"></div>
   </div>
   <div class="safe-b"></div>
 </div>
@@ -495,7 +469,7 @@ input,textarea{font-family:inherit}
   <button class="nav-btn" id="nb-tsd"  onclick="navTab('s-tsd','nb-tsd')"><span class="nav-ico">📟</span><span class="nav-lbl">ТСД</span></button>
   <button class="nav-btn" id="nb-rev"  onclick="navTab('s-revisor','nb-rev')"><span class="nav-ico">🔍</span><span class="nav-lbl">Ревизоры</span></button>
   <button class="nav-btn" id="nb-docs" onclick="navTab('s-docs','nb-docs')"><span class="nav-ico">📚</span><span class="nav-lbl">Инструкции</span></button>
-  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Предложения</span></button>
+  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Идеи</span></button>
 </nav>
 
 <!-- SCANNER -->
@@ -511,7 +485,6 @@ if(tg){tg.ready();tg.expand();}
 
 // ❗ ВСТАВЬ СЮДА СВОИ ПУБЛИЧНЫЕ ССЫЛКИ НА CSV ❗
 const CSV_URLS = {
-  tsd: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1474253174&single=true&output=csv",
   docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
   leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
 };
@@ -542,19 +515,50 @@ function sendDataAndClose(action, payload){
   }
 }
 
-// ── AUTH ──
+// ── DECODE PAYLOAD (ZERO-PORT API) ──
+function decodePayload() {
+  const p = new URLSearchParams(window.location.search).get('d');
+  if(!p || p === 'none') return null;
+  try {
+    let b64 = p.replace(/-/g, '+').replace(/_/g, '/');
+    let pad = b64.length % 4;
+    if(pad) b64 += '='.repeat(4 - pad);
+    // Используем правильный декодер для поддержки Кириллицы
+    const bytes = Uint8Array.from(window.atob(b64), c => c.charCodeAt(0));
+    const jsonStr = new TextDecoder().decode(bytes);
+    return JSON.parse(jsonStr);
+  } catch(e) { console.error("Payload decode error", e); return null; }
+}
+
+// ── AUTH & INITIALIZATION ──
 window.addEventListener('DOMContentLoaded',()=>{
   initTheme(); updateHdr();
-  const p=new URLSearchParams(window.location.search);
-  const role=p.get('role'), name=p.get('name'), zone=p.get('zone');
-  if(role && role!=='none') {
-    loginSuccess({role, name:name||'', zone:zone||'', initials:(name||'??').substring(0,2).toUpperCase()});
+  
+  const payloadData = decodePayload();
+  
+  if(payloadData && payloadData.u) {
+    // Вход через Base64 Payload
+    const user = {
+        role: payloadData.u.role, 
+        name: payloadData.u.name || '', 
+        zone: payloadData.u.zone || '', 
+        initials: (payloadData.u.name || '??').substring(0,2).toUpperCase()
+    };
+    loginSuccess(user);
+    renderDashboard(payloadData);
+  } else {
+    // Вход по-старому (Fallback)
+    const p=new URLSearchParams(window.location.search);
+    const role=p.get('role'), name=p.get('name'), zone=p.get('zone');
+    if(role && role!=='none') {
+      loginSuccess({role, name:name||'', zone:zone||'', initials:(name||'??').substring(0,2).toUpperCase()});
+    }
   }
 });
 
 function doAuth(){
   let v = document.getElementById('wmsInp').value.trim().toUpperCase();
-  if(v.startsWith("20") && v.length > 5) v = v.substring(2); // Отрезаем префикс 20
+  if(v.startsWith("20") && v.length > 5) v = v.substring(2); 
   if(v.length < 2) { document.getElementById('wmsInp').focus(); return; }
   sendDataAndClose('login', {wms: v});
 }
@@ -575,6 +579,64 @@ function loginSuccess(user){
   tg?.HapticFeedback?.notificationOccurred('success');
 }
 
+// ── RENDER DYNAMIC DATA ──
+function renderDashboard(data) {
+    // 1. TSD
+    if(data.tsd) {
+        document.getElementById('tsd-inuse').textContent = data.tsd.in_use || "0";
+        document.getElementById('tsd-mine').textContent = data.tsd.mine ? `#${data.tsd.mine}` : "Нет";
+    }
+
+    // 2. SUGGESTIONS
+    if(data.sug) {
+        const pubWrap = document.getElementById('pub-ideas-container');
+        const myWrap = document.getElementById('my-ideas-container');
+        
+        // Публичные
+        let pubHtml = '';
+        if(data.sug.pub && data.sug.pub.length > 0) {
+            data.sug.pub.forEach(s => {
+                pubHtml += `<div class="sug-card"><div style="font-size:11px;color:var(--text3);font-weight:600">${s.employee_name}</div><div class="sug-text">«${s.text}»</div><div class="pill p-g">✅ Одобрено</div></div>`;
+            });
+        } else {
+            pubHtml = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Пока нет одобренных идей.</div>';
+        }
+        pubWrap.innerHTML = pubHtml;
+
+        // Мои
+        let myHtml = '';
+        const statuses = {
+            'pending':'<span class="pill p-y">🟡 На рассмотрении</span>', 
+            'new':'<span class="pill p-y">🟡 На рассмотрении</span>', 
+            'approved':'<span class="pill p-g">✅ Одобрено</span>', 
+            'rejected':'<span class="pill p-r">❌ Отклонено</span>'
+        };
+        
+        if(data.sug.my && data.sug.my.length > 0) {
+            data.sug.my.forEach(s => {
+                let acts = '';
+                if(s.status === 'pending' || s.status === 'new') {
+                    acts = `<div class="sug-acts">
+                        <button class="btn-txt" onclick="sendDataAndClose('suggestion_edit', {id:${s.id}})">Редактировать</button>
+                        <button class="btn-txt danger" onclick="confirmDelete(${s.id})">Удалить</button>
+                    </div>`;
+                }
+                myHtml += `<div class="sug-card">${statuses[s.status] || ''}<div class="sug-text">${s.text}</div>${acts}</div>`;
+            });
+        } else {
+            myHtml = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Вы еще не предлагали идеи.</div>';
+        }
+        myWrap.innerHTML = myHtml;
+    }
+}
+
+function confirmDelete(id) {
+    tg?.HapticFeedback?.impactOccurred('medium');
+    if(confirm('Вы уверены, что хотите удалить это предложение?')) {
+        sendDataAndClose('suggestion_delete', {id: id});
+    }
+}
+
 // ── NAVIGATION ──
 let cur='s-auth', hist=[];
 const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-docs':'Инструкции','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-shift':'Панель управления'};
@@ -588,7 +650,6 @@ function nav(id){
   updateHdr(); window.scrollTo(0,0);
   tg?.HapticFeedback?.selectionChanged();
   
-  if(id === 's-tsd') loadActiveTSD();
   if(id === 's-docs') loadDocs();
   if(id === 's-leaders') loadLeaders();
 }
@@ -627,11 +688,6 @@ function sendFault(){
   sendDataAndClose('fault_start', {fault_type: ft ? ft.querySelector('.ft-lbl').textContent : 'Прочее'});
 }
 function sendRevisor(){ sendDataAndClose('revisor_start', {}); }
-function sendSuggestion(mode){
-  const txt=document.getElementById('sugText').value.trim();
-  if(txt.length<10){alert('Мин. 10 символов');return;}
-  sendDataAndClose('suggestion', {text: txt, mode});
-}
 
 function selCond(groupId,el,type){
   document.querySelectorAll('#'+groupId+' .cp').forEach(c=>c.classList.remove('ok','warn','bad'));
@@ -649,37 +705,9 @@ function selFault(el){
   el.classList.add('sel'); tg?.HapticFeedback?.selectionChanged();
 }
 
-// ── DYNAMIC CSV LOADING (TSD) ──
-function loadActiveTSD() {
-  const wrap = document.getElementById('tsd-list-container');
-  if(!wrap) return;
-  if(!CSV_URLS.tsd.startsWith("http")) { wrap.innerHTML='<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Вставьте CSV ссылку в код</div>'; return; }
-  
-  wrap.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
-  Papa.parse(CSV_URLS.tsd + "&t=" + Date.now(), {
-    download: true, header: true,
-    complete: function(results) {
-      wrap.innerHTML = '<div class="list-hd">Сейчас на руках</div>';
-      const active = results.data.filter(r => r.take_time && !r.give_time && r.tsd_number);
-      document.getElementById('tsd-inuse').textContent = active.length;
-      
-      if(active.length === 0) {
-        wrap.innerHTML += '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Все ТСД сданы</div>';
-        return;
-      }
-      active.forEach(r => {
-        let pill = r.condition_take === 'ok' ? '<span class="pill p-g">Активен</span>' : '<span class="pill p-o">Сбой</span>';
-        let time = (r.take_time.split(' ')[1] || r.take_time).substring(0, 5);
-        wrap.innerHTML += `<div class="li"><div class="tsd-n">#${r.tsd_number}</div><div class="tsd-i"><div class="tsd-nm">${r.short_name}</div><div class="tsd-zn">${r.zone}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${time}</div><div style="margin-top:3px">${pill}</div></div></div>`;
-      });
-    },
-    error: function() { wrap.innerHTML='<div style="text-align:center;padding:20px;color:var(--red)">Ошибка загрузки CSV</div>'; }
-  });
-}
-
 // ── DYNAMIC CSV LOADING (DOCS) ──
-let allDocs = [];
-let curCategory = 'process'; // По умолчанию показываем Процессы
+let allDocs =[];
+let curCategory = 'process'; 
 let curZone = 'Все';
 
 function setCategory(cat) {
@@ -719,10 +747,7 @@ function loadDocs() {
 function renderDocs() {
     const wrap = document.getElementById('docs-list-container');
     wrap.innerHTML = '';
-
-    // Фильтруем: сначала по категории (process/hse), потом по зоне
     const filtered = allDocs.filter(d => {
-        // Если в таблице не заполнена категория, считаем её "process"
         const docCat = d.category ? d.category : 'process'; 
         const matchCat = docCat === curCategory;
         const matchZone = (curZone === 'Все') || (d.zone === curZone) || (d.zone === 'Все');
@@ -769,10 +794,8 @@ function loadLeaders() {
          return;
       }
       data.forEach(d => {
-        // Вырезаем инициалы (Боровская Светлана -> БС)
         let parts = d.fio.split(' ').filter(p=>p);
         let init = parts.length > 1 ? (parts[0][0]+parts[1][0]).toUpperCase() : (parts[0]?.[0] || '?').toUpperCase();
-
         wrap.innerHTML += `
           <div class="leader-card">
             <div class="leader-bg-icon">🏆</div>
@@ -787,7 +810,7 @@ function loadLeaders() {
           </div>
         `;
       });
-      leadersLoaded = true; // Загружаем только один раз за сессию для скорости
+      leadersLoaded = true;
     }
   });
 }  
