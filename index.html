@@ -461,7 +461,10 @@ if(tg){tg.ready();tg.expand();}
 
 const CSV_URLS = {
   docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
-  leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
+  leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv",
+  // FIX: Опубликуй лист live_dashboard (Файл → Поделиться → Опубликовать в интернете → лист live_dashboard → CSV)
+  // и вставь ссылку сюда. Тогда список ТСД будет обновляться каждые 15 сек без перезапуска WebApp.
+  live_dashboard: "" // ← ВСТАВИТЬ ССЫЛКУ
 };
 
 let dark = false;
@@ -501,25 +504,90 @@ function decodePayload() {
   } catch(e) { console.error("Payload decode error", e); return null; }
 }
 
+// ── Live Dashboard Polling ───────────────────────────────────────────────────
+let _liveInterval = null;
+let _lastLiveEtag  = null;  // простая защита от повторной отрисовки одинаковых данных
+
+function startLivePolling() {
+  if (_liveInterval) return;
+  if (!CSV_URLS.live_dashboard) return; // ссылка не задана — polling не запускаем
+  _liveInterval = setInterval(fetchLiveDashboard, 15000);
+  fetchLiveDashboard(); // первый запрос сразу
+}
+
+function fetchLiveDashboard() {
+  if (!CSV_URLS.live_dashboard) return;
+  const url = CSV_URLS.live_dashboard + "&t=" + Date.now();
+  Papa.parse(url, {
+    download: true, header: true,
+    complete: function(results) {
+      const rows = results.data.filter(r => r._TYPE);
+      // Простая дедупликация: сравниваем кол-во строк + первое значение
+      const etag = rows.length + (rows[0] ? JSON.stringify(rows[0]) : '');
+      if (etag === _lastLiveEtag) return;
+      _lastLiveEtag = etag;
+      applyLiveDashboard(rows);
+    },
+    error: function(err) { console.warn("Live dashboard fetch error:", err); }
+  });
+}
+
+function applyLiveDashboard(rows) {
+  // Читаем STAT строки
+  const stats = {};
+  rows.filter(r => r._TYPE === 'STAT').forEach(r => { stats[r.KEY] = r.VALUE; });
+  if (stats.tsd_in_use  !== undefined) document.getElementById('tsd-inuse').textContent = stats.tsd_in_use;
+  if (stats.revisor_open   !== undefined) document.getElementById('rs-open').textContent   = stats.revisor_open;
+  if (stats.revisor_closed !== undefined) document.getElementById('rs-closed').textContent  = stats.revisor_closed;
+  document.getElementById('rev-stats').style.display = 'grid';
+
+  // Читаем ACTIVE_TSD строки
+  const tsdRows = rows.filter(r => r._TYPE === 'ACTIVE_TSD');
+  const tsdWrap = document.getElementById('tsd-list-container');
+  if (!tsdWrap) return;
+  if (tsdRows.length === 0) {
+    tsdWrap.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Все терминалы свободны.</div>';
+    startTsdTimers();
+    return;
+  }
+  let html = '';
+  tsdRows.forEach(t => {
+    const takeTime = t.EXTRA2 || '';
+    const timeShort = takeTime.length >= 16 ? takeTime.substring(11,16) : '—';
+    html += \`<div class="li">
+      <div class="tsd-n">#\${t.KEY}</div>
+      <div class="tsd-i">
+        <div class="tsd-nm">\${t.EXTRA1}</div>
+        <div class="tsd-zn">взял в \${timeShort}</div>
+      </div>
+      <div class="pill p-y tsd-timer" data-time="\${takeTime}">00:00</div>
+    </div>\`;
+  });
+  tsdWrap.innerHTML = html;
+  startTsdTimers();
+}
+
 window.addEventListener('DOMContentLoaded',()=>{
   initTheme(); updateHdr();
-  
+
   const payloadData = decodePayload();
-  
+
   if(payloadData && payloadData.u) {
     const user = {
-        role: payloadData.u.role, 
-        name: payloadData.u.name || '', 
-        zone: payloadData.u.zone || '', 
+        role:     payloadData.u.role,
+        name:     payloadData.u.name || '',
+        zone:     payloadData.u.zone || '',
         initials: (payloadData.u.name || '??').substring(0,2).toUpperCase()
     };
     loginSuccess(user);
     renderDashboard(payloadData);
+    startLivePolling(); // запускаем polling после логина из payload
   } else {
     const p=new URLSearchParams(window.location.search);
     const role=p.get('role'), name=p.get('name'), zone=p.get('zone');
     if(role && role!=='none') {
       loginSuccess({role, name:name||'', zone:zone||'', initials:(name||'??').substring(0,2).toUpperCase()});
+      startLivePolling();
     }
   }
 });
@@ -575,29 +643,15 @@ function startTsdTimers() {
 }
 
 function renderDashboard(data) {
-    // 1. TSD (добавлен список и таймеры)
+    // 1. TSD — базовые данные из payload (список живёт в polling через live_dashboard CSV)
     if(data.tsd) {
-        document.getElementById('tsd-inuse').textContent = data.tsd.in_use || "0";
-        document.getElementById('tsd-mine').textContent = data.tsd.mine ? `#${data.tsd.mine}` : "Нет";
-
-        const tsdWrap = document.getElementById('tsd-list-container');
-        if(data.tsd.list && data.tsd.list.length > 0) {
-            let html = '';
-            data.tsd.list.forEach(t => {
-                html += `
-                <div class="li">
-                  <div class="tsd-n">#${t.tsd_number}</div>
-                  <div class="tsd-i">
-                    <div class="tsd-nm">${t.employee_name}</div>
-                    <div class="tsd-zn">${t.zone} · взял в ${t.take_time ? t.take_time.substring(11,16) : '—'}</div>
-                  </div>
-                  <div class="pill p-y tsd-timer" data-time="${t.take_time}">00:00</div>
-                </div>`;
-            });
-            tsdWrap.innerHTML = html;
-            startTsdTimers();
-        } else {
-            tsdWrap.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Все терминалы свободны.</div>';
+        document.getElementById('tsd-inuse').textContent = data.tsd.in_use ?? "0";
+        const myTsd = data.tsd.mine;
+        document.getElementById('tsd-mine').textContent = myTsd ? `#${myTsd}` : "Нет";
+        // Если polling не настроен (нет CSV URL) — показываем статичную заглушку
+        if (!CSV_URLS.live_dashboard) {
+            const tsdWrap = document.getElementById('tsd-list-container');
+            tsdWrap.innerHTML = '<div style="font-size:11px;color:var(--text3);text-align:center;padding:16px 0;">📋 Опубликуйте лист live_dashboard для отображения списка</div>';
         }
     }
 
@@ -617,23 +671,26 @@ function renderDashboard(data) {
         pubWrap.innerHTML = pubHtml;
 
         let myHtml = '';
+        // FIX #4: Статус читается из SQLite (обновляется при нажатии кнопки в чате).
+        // 'new' = то же что 'pending' (Sheets использует 'new', SQLite — 'pending')
         const statuses = {
-            'pending':'<span class="pill p-y">🟡 На рассмотрении</span>', 
-            'new':'<span class="pill p-y">🟡 На рассмотрении</span>', 
-            'approved':'<span class="pill p-g">✅ Одобрено</span>', 
-            'rejected':'<span class="pill p-r">❌ Отклонено</span>'
+            'pending': '<span class="pill p-y">🟡 На рассмотрении</span>',
+            'new':     '<span class="pill p-y">🟡 На рассмотрении</span>',
+            'approved':'<span class="pill p-g">✅ Одобрено</span>',
+            'rejected':'<span class="pill p-r">❌ Отклонено</span>',
         };
-        
+        const editableStatuses = new Set(['pending','new']);
+
         if(data.sug.my && data.sug.my.length > 0) {
             data.sug.my.forEach(s => {
                 let acts = '';
-                if(s.status === 'pending' || s.status === 'new') {
+                if(editableStatuses.has(s.status)) {
                     acts = `<div class="sug-acts">
-                        <button class="btn-txt" onclick="sendDataAndClose('suggestion_edit', {id:${s.id}})">Редактировать</button>
+                        <button class="btn-txt" onclick="sendDataAndClose('suggestion_edit',{id:${s.id}})">Редактировать</button>
                         <button class="btn-txt danger" onclick="confirmDelete(${s.id})">Удалить</button>
                     </div>`;
                 }
-                myHtml += `<div class="sug-card">${statuses[s.status] || ''}<div class="sug-text">${s.text}</div>${acts}</div>`;
+                myHtml += `<div class="sug-card">${statuses[s.status]||''}<div class="sug-text">${s.text}</div>${acts}</div>`;
             });
         } else {
             myHtml = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px 0;">Вы еще не предлагали идеи.</div>';
@@ -641,12 +698,11 @@ function renderDashboard(data) {
         myWrap.innerHTML = myHtml;
     }
 
-    // 3. REVISOR STATS — FIX #3: показываем данные за 30 дней (приходят с бота)
-    // Данные приходят всегда — отображаем блок даже если нулевые
+    // 3. REVISOR STATS — из payload (за последние 30 дней)
     const rev = data.rev || {};
     document.getElementById('rev-stats').style.display = 'grid';
-    document.getElementById('rs-open').textContent = rev.open ?? "0";
-    document.getElementById('rs-closed').textContent = rev.closed ?? "0";
+    document.getElementById('rs-open').textContent    = rev.open    ?? "0";
+    document.getElementById('rs-closed').textContent  = rev.closed  ?? "0";
 }
 
 function confirmDelete(id) {
