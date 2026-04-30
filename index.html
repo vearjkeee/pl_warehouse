@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* CSS стили остаются прежними, добавляю только стили для счетчиков ТСД */
 :root {
   --red:#C8272E; --red-h:#a81f25; --red-s:rgba(200,39,46,.12); --red-b:rgba(200,39,46,.28);
   --bg:#F2F2F7; --bg2:#FFF; --bg3:#F2F2F7; --card:#FFF; --border:rgba(0,0,0,.09);
@@ -29,7 +30,6 @@ body{font-family:'Golos Text',system-ui,sans-serif;background:var(--bg);color:va
 button{font-family:inherit;border:none;cursor:pointer;background:none}
 input,textarea{font-family:inherit}
 
-/* ── LOGO & HEADER ── */
 .pl-logo{display:flex;align-items:center;gap:9px;user-select:none}
 .pl-letters{display:flex;align-items:baseline;gap:1px}
 .pl-p{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:900;color:var(--text);line-height:1;transition:color .25s}
@@ -53,7 +53,6 @@ input,textarea{font-family:inherit}
 .screen.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── BOTTOM NAV ── */
 .bot-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:none;z-index:90;padding-bottom:env(safe-area-inset-bottom,0)}
 .bot-nav.show{display:flex}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px 7px;cursor:pointer;position:relative;transition:opacity .1s;border:none;background:none}
@@ -63,7 +62,6 @@ input,textarea{font-family:inherit}
 .nav-btn.active .nav-ico{transform:scale(1.1)}
 .nav-btn.active .nav-lbl{color:var(--red)}
 
-/* ── AUTH ── */
 .auth-wrap{min-height:calc(100vh - 52px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:0}
 .auth-big-logo .pl-p,.auth-big-logo .pl-l{font-size:52px}
 .auth-tagline{font-family:'Unbounded',sans-serif;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:8px 0 28px;text-align:center}
@@ -77,7 +75,6 @@ input,textarea{font-family:inherit}
 .btn-secondary{width:100%;padding:12px;background:var(--bg3);color:var(--text);border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--border);transition:background .15s}
 .btn-secondary:active{background:var(--border)}
 
-/* ── WELCOME CARD (GLASSMORPHISM) ── */
 .welcome-card{margin:12px 16px 0;background:linear-gradient(135deg, rgba(200,39,46,0.9) 0%, rgba(200,39,46,0.7) 100%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:var(--r3);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(200,39,46,.25)}
 .w-ava{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .w-name{font-size:14px;font-weight:600;color:#fff}
@@ -85,8 +82,6 @@ input,textarea{font-family:inherit}
 .w-role{display:inline-block;background:rgba(255,255,255,.25);border-radius:5px;font-size:9px;padding:2px 7px;color:#fff;margin-top:4px;font-weight:600;letter-spacing:.3px}
 
 .sec-lbl{padding:14px 16px 7px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px}
-
-/* ── MENU GRID ── */
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px}
 .mc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px 13px;cursor:pointer;display:flex;flex-direction:column;gap:7px;box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s;position:relative;overflow:hidden}
 .mc:active{transform:scale(.96);box-shadow:none}
@@ -103,6 +98,12 @@ input,textarea{font-family:inherit}
 .ph-title{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
 .ph-sub{font-size:12px;color:var(--text3);margin-top:3px}
 
+/* TSD Stats Blocks */
+.tsd-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;padding:10px 16px}
+.tsd-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 9px;text-align:center;box-shadow:var(--shadow)}
+.ts-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700}
+.ts-lbl{font-size:9px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+
 .act-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
 .act-btn{padding:15px 12px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;font-weight:600;transition:transform .1s,opacity .1s; text-align:center; line-height:1.3}
 .act-btn:active{transform:scale(.96);opacity:.85}
@@ -110,15 +111,13 @@ input,textarea{font-family:inherit}
 .act-btn.p{background:var(--red);color:#fff}
 .act-btn.s{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow)}
 
-/* ── REVISOR STATS CARD ── */
 .rev-stats-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin:0 16px 14px;box-shadow:var(--shadow);font-size:12px;line-height:1.6}
 .rs-title{font-weight:700;margin-bottom:6px;color:var(--text)}
 .rs-div{height:1px;background:var(--border);margin:8px 0}
 .rs-row{display:flex;justify-content:space-between;margin-bottom:4px;color:var(--text2)}
 .rs-pct{color:var(--text3);font-size:11px;font-weight:500}
-.c-g{color:var(--green);font-weight:700} .c-r{color:var(--red);font-weight:700}
+.c-g{color:var(--green);font-weight:700} .c-r{color:var(--red);font-weight:700} .c-o{color:var(--orange);font-weight:700}
 
-/* ── LIST & SKELETON ── */
 .list-wrap{padding:0 16px}
 .list-hd{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
 .li{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:11px;}
@@ -136,7 +135,6 @@ input,textarea{font-family:inherit}
 .p-o{background:rgba(255,159,10,.15);color:var(--orange);border:1px solid rgba(255,159,10,.3)}
 .p-r{background:var(--red-s);color:var(--red);border:1px solid var(--red-b)}
 
-/* ── FORM ── */
 .fb{padding:0 16px 11px}
 .fl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;display:block}
 .fi{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 13px;font-size:15px;font-weight:600;color:var(--text);outline:none;transition:border-color .15s}
@@ -148,7 +146,6 @@ input,textarea{font-family:inherit}
 .cp.warn{background:rgba(255,159,10,.1);border-color:var(--orange);color:var(--orange)}
 .cp.bad{background:var(--red-s);border-color:var(--red);color:var(--red)}
 
-/* ── FAULT GRID ── */
 .fault-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 16px 13px}
 .ft{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:15px 11px;text-align:center;cursor:pointer;transition:all .15s}
 .ft:active,.ft.sel{border-color:var(--red);background:var(--red-s)}
@@ -156,7 +153,6 @@ input,textarea{font-family:inherit}
 .ft .ft-lbl{font-size:12px;font-weight:600}
 .ft .ft-sub{font-size:10px;color:var(--text3);margin-top:3px}
 
-/* ── DOCS ── */
 .chip-scroll{display:flex;gap:7px;padding:9px 16px;overflow-x:auto;scrollbar-width:none}
 .chip-scroll::-webkit-scrollbar{display:none}
 .zchip{padding:6px 13px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:500;color:var(--text2);white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .15s}
@@ -168,7 +164,6 @@ input,textarea{font-family:inherit}
 .doc-meta{font-size:10px;color:var(--text3);margin-top:2px}
 .active-cat {background: var(--red) !important; color: #fff !important; border-color: var(--red) !important;}
 
-/* ── LEADERS ── */
 .leader-card {background: var(--card);border: 1px solid rgba(255,159,10,.3);border-radius: var(--r);padding: 16px;margin-bottom: 12px;position: relative;overflow: hidden;box-shadow: 0 4px 12px rgba(255,159,10,.08);}
 .leader-bg-icon {position: absolute;right: -10px;bottom: -15px;font-size: 80px;opacity: 0.04;transform: rotate(-10deg);pointer-events: none;}
 .leader-hdr {display: flex;align-items: center;gap: 12px;margin-bottom: 12px;}
@@ -229,7 +224,7 @@ input,textarea{font-family:inherit}
     </div>
   </div>
   
-  <div class="sec-lbl">Оборудование</div>
+  <div class="sec-lbl">Терминалы сбора данных</div>
   <div class="menu-grid" style="margin-bottom: 12px;">
     <!-- ШИРОКАЯ ПЛИТКА ТСД -->
     <div class="mc wide" onclick="nav('s-tsd')">
@@ -252,14 +247,15 @@ input,textarea{font-family:inherit}
       <div class="mc-icon ci-b">🔧</div>
       <div><div class="mc-title">Неисправность</div><div class="mc-desc">Стеллаж, тележка</div></div>
     </div>
+    <div class="mc" onclick="nav('s-suggestion')">
+      <div class="mc-icon ci-t">💡</div>
+      <div><div class="mc-title">Предложения</div><div class="mc-desc">Улучшения склада</div></div>
+    </div>
     <div class="mc" onclick="nav('s-docs')">
       <div class="mc-icon ci-g">📚</div>
       <div><div class="mc-title">Инструкции</div><div class="mc-desc">База знаний</div></div>
     </div>
-    <div class="mc" onclick="nav('s-suggestion')">
-      <div class="mc-icon ci-t">💡</div>
-      <div><div class="mc-title">Идеи</div><div class="mc-desc">Улучшения склада</div></div>
-    </div>
+    
     <div class="mc wide" onclick="nav('s-leaders')">
       <div class="mc-icon ci-o">🏆</div>
       <div class="mc-text"><div class="mc-title">Лидеры квартала</div><div class="mc-desc">Лучшие сотрудники склада</div></div>
@@ -277,6 +273,13 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: TSD ══ -->
 <div class="screen" id="s-tsd">
   <div class="ph"><div class="ph-title">Журнал ТСД</div><div class="ph-sub">Регистрация терминалов сбора данных</div></div>
+  
+  <!-- СЧЕТЧИКИ ТСД (Моментальное обновление из SQLite) -->
+  <div class="tsd-stats">
+    <div class="tsd-stat"><div class="ts-num c-o" id="tsd-inuse">0</div><div class="ts-lbl">На руках</div></div>
+    <div class="tsd-stat"><div class="ts-num c-g" id="tsd-free">0</div><div class="ts-lbl">Свободно</div></div>
+  </div>
+
   <div class="act-row">
     <button class="act-btn p" onclick="nav('s-tsd-take')"><span class="b-ico">📥</span>Взять ТСД</button>
     <button class="act-btn s" onclick="nav('s-tsd-give')"><span class="b-ico">📤</span>Сдать ТСД</button>
@@ -354,8 +357,14 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: SUGGESTION ══ -->
 <div class="screen" id="s-suggestion">
   <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению склада</div></div>
-  <div class="px16 mb14"><button class="btn-primary" onclick="sendDataAndClose('suggestion_start',{})">💡 + Новая идея</button></div>
-  <div class="sec-lbl">Мои идеи</div>
+  <div class="px16 mb14"><button class="btn-primary" onclick="sendDataAndClose('suggestion_start',{})">💡 + Новое предложение</button></div>
+  
+  <div class="sec-lbl">Одобрено руководством</div>
+  <div class="px16 mb14" id="pub-ideas-container">
+    <div class="skeleton" style="height:56px"></div>
+  </div>
+
+  <div class="sec-lbl">Мои предложения</div>
   <div class="px16" id="my-ideas-container"><div class="skeleton" style="height:72px"></div></div>
   <div class="safe-b"></div>
 </div>
@@ -404,7 +413,8 @@ input,textarea{font-family:inherit}
   <button class="nav-btn active" id="nb-home" onclick="navTab('s-home','nb-home')"><span class="nav-ico">🏠</span><span class="nav-lbl">Главная</span></button>
   <button class="nav-btn" id="nb-tsd"  onclick="navTab('s-tsd','nb-tsd')"><span class="nav-ico">📱</span><span class="nav-lbl">ТСД</span></button>
   <button class="nav-btn" id="nb-rev"  onclick="navTab('s-revisor','nb-rev')"><span class="nav-ico">🔍</span><span class="nav-lbl">Ревизоры</span></button>
-  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Идеи</span></button>
+  <button class="nav-btn" id="nb-docs" onclick="navTab('s-docs','nb-docs')"><span class="nav-ico">📚</span><span class="nav-lbl">Инструкции</span></button>
+  <button class="nav-btn" id="nb-more" onclick="navTab('s-suggestion','nb-more')"><span class="nav-ico">💡</span><span class="nav-lbl">Предложения</span></button>
 </nav>
 
 <script>
@@ -413,11 +423,9 @@ if(tg){tg.ready();tg.expand();}
 
 // ❗ ВСТАВЬ СЮДА СВОИ ССЫЛКИ ❗
 const CSV_URLS = {
-  // ТСД: сюда ссылку на НОВЫЙ лист active_tsds (который мы создали)
+  // ТСД: сюда ссылку на НОВЫЙ лист active_tsds
   tsd: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=113531983&single=true&output=csv",
-  // Инструкции (оставляем твою старую ссылку)
   docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
-  // Лидеры (оставляем твою старую ссылку)
   leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
 };
 
@@ -466,13 +474,21 @@ function renderDashboard(data) {
   const tIcon = document.getElementById('mc-tsd-icon');
   
   if (data.tsd && data.tsd.m) {
-    tTitle.textContent = 'Мой терминал: #' + data.tsd.m;
-    tDesc.textContent = 'Не забудь сдать терминал в конце смены';
+    tTitle.textContent = 'Журнал ТСД';
+    tDesc.innerHTML = `Мой терминал: <b>#${data.tsd.m}</b> • Не забудь сдать в конце смены`;
     tIcon.classList.replace('ci-r', 'ci-g');
   } else {
     tTitle.textContent = 'Журнал ТСД';
     tDesc.textContent = 'Для начала работы зарегистрируй терминал';
     tIcon.classList.replace('ci-g', 'ci-r');
+  }
+
+  // СЧЕТЧИКИ ТСД (Моментальное обновление из SQLite)
+  if (data.tsd) {
+    let inUse = data.tsd.u || 0;
+    let total = data.tsd.t || 149;
+    document.getElementById('tsd-inuse').textContent = inUse;
+    document.getElementById('tsd-free').textContent = total - inUse;
   }
 
   // ── РЕВИЗОРЫ ──
@@ -483,22 +499,21 @@ function renderDashboard(data) {
     
     document.getElementById('rs-24h').textContent = r.t24;
     document.getElementById('rs-30d').textContent = r.t30;
-    
     document.getElementById('rs-day').textContent = r.d;
     document.getElementById('rs-day-pct').textContent = '(' + pct(r.d, r.t30) + ')';
-    
     document.getElementById('rs-night').textContent = r.n;
     document.getElementById('rs-night-pct').textContent = '(' + pct(r.n, r.t30) + ')';
-    
     document.getElementById('rs-ok').textContent = r.ok;
     document.getElementById('rs-ok-pct').textContent = '(' + pct(r.ok, r.t30) + ')';
-    
     document.getElementById('rs-rj').textContent = r.rj;
     document.getElementById('rs-rj-pct').textContent = '(' + pct(r.rj, r.t30) + ')';
   }
 
   // ── ИДЕИ ──
-  if (data.sug && data.sug.m) renderMySuggestions(data.sug.m);
+  if (data.sug) {
+    if (data.sug.m) renderMySuggestions(data.sug.m);
+    if (data.sug.p) renderPublicSuggestions(data.sug.p);
+  }
 }
 
 function renderMySuggestions(list) {
@@ -511,6 +526,17 @@ function renderMySuggestions(list) {
       <div style="font-size:12px;margin-top:6px;line-height:1.5">${String(s.text).replace(/</g,'&lt;')}</div>
     </div>`;
   }).join('');
+}
+
+function renderPublicSuggestions(list) {
+  const wrap = document.getElementById('pub-ideas-container');
+  if (!list.length) { wrap.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--text3)">Одобренных предложений пока нет</div>'; return; }
+  wrap.innerHTML = list.map(s =>
+    `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;margin-bottom:7px">
+      <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">${String(s.employee_name).replace(/</g,'&lt;')}</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.5">${String(s.text).replace(/</g,'&lt;')}</div>
+    </div>`
+  ).join('');
 }
 
 function doAuth(){
@@ -533,7 +559,7 @@ function loginSuccess(user){
 }
 
 let cur='s-auth', hist=[];
-const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-revisor':'Ревизорам','s-suggestion':'Идеи','s-docs':'Инструкции','s-leaders':'Лидеры квартала','s-shift':'Панель управления'};
+const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-docs':'Инструкции','s-leaders':'Лидеры квартала','s-shift':'Панель управления'};
 function nav(id){
   if(id===cur)return;
   document.getElementById(cur)?.classList.remove('active');
@@ -589,6 +615,12 @@ function loadActiveTSD() {
     complete: function(results) {
       wrap.innerHTML = '<div class="list-hd">Сейчас на руках</div>';
       const active = results.data.filter(r => r.tsd_number);
+      
+      // Обновляем счетчики дополнительно из таблицы, чтобы учесть изменения других
+      let total = 149; // Из пула
+      document.getElementById('tsd-inuse').textContent = active.length;
+      document.getElementById('tsd-free').textContent = total - active.length;
+
       if(active.length === 0) { wrap.innerHTML += '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Свободные терминалы ожидают на базе</div>'; return; }
       active.forEach(r => {
         let condText = (r.condition === 'ok') ? '<span class="pill p-g">Исправен</span>' : '<span class="pill p-r">Сбои</span>';
