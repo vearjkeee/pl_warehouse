@@ -10,7 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* CSS стили остаются прежними, добавляю только стили для счетчиков ТСД */
 :root {
   --red:#C8272E; --red-h:#a81f25; --red-s:rgba(200,39,46,.12); --red-b:rgba(200,39,46,.28);
   --bg:#F2F2F7; --bg2:#FFF; --bg3:#F2F2F7; --card:#FFF; --border:rgba(0,0,0,.09);
@@ -46,8 +45,8 @@ input,textarea{font-family:inherit}
 .hdr-right{display:flex;align-items:center;gap:7px}
 .theme-btn{width:30px;height:30px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s,transform .2s}
 .theme-btn:active{background:var(--border);transform:scale(.9)}
-.user-chip{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 9px 3px 4px;font-size:11px;color:var(--text2);font-weight:500}
-.u-ava{width:20px;height:20px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* Убран user-chip - он больше не нужен */
 
 .screen{display:none;animation:fadeUp .2s ease}
 .screen.active{display:block}
@@ -68,12 +67,22 @@ input,textarea{font-family:inherit}
 .auth-card{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r3);padding:18px;box-shadow:var(--shadow)}
 .auth-card-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;margin-bottom:5px}
 .auth-card-sub{font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.5}
+.scan-btn{width:100%;padding:13px;background:var(--bg3);color:var(--text);border-radius:var(--r);font-size:14px;font-weight:600;border:1.5px solid var(--border);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.scan-btn:active{background:var(--border);border-color:var(--red);transform:scale(.98)}
+.div-or{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--text3);font-size:11px;font-weight:500}
+.div-or::before,.div-or::after{content:'';flex:1;height:1px;background:var(--border)}
 .wms-inp{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 13px;font-size:15px;font-weight:600;color:var(--text);letter-spacing:1.5px;text-transform:uppercase;outline:none;transition:border-color .15s;margin-bottom:9px}
 .wms-inp:focus{border-color:var(--red)}
 .btn-primary{width:100%;padding:13px;background:var(--red);color:#fff;border-radius:var(--r);font-family:'Golos Text',sans-serif;font-size:14px;font-weight:600;transition:background .15s,transform .1s}
 .btn-primary:active{background:var(--red-h);transform:scale(.98)}
 .btn-secondary{width:100%;padding:12px;background:var(--bg3);color:var(--text);border-radius:var(--r);font-size:13px;font-weight:500;border:1px solid var(--border);transition:background .15s}
 .btn-secondary:active{background:var(--border)}
+
+/* Overlay сканера */
+.scan-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.95);z-index:100;flex-direction:column;align-items:center;justify-content:center}
+.scan-overlay.open{display:flex}
+.scan-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:101}
+.scan-hint{color:#fff;font-size:14px;margin-top:20px;text-align:center;opacity:.8}
 
 .welcome-card{margin:12px 16px 0;background:linear-gradient(135deg, rgba(200,39,46,0.9) 0%, rgba(200,39,46,0.7) 100%);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);border-radius:var(--r3);padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(200,39,46,.25)}
 .w-ava{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -98,7 +107,6 @@ input,textarea{font-family:inherit}
 .ph-title{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
 .ph-sub{font-size:12px;color:var(--text3);margin-top:3px}
 
-/* TSD Stats Blocks */
 .tsd-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;padding:10px 16px}
 .tsd-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:11px 9px;text-align:center;box-shadow:var(--shadow)}
 .ts-num{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700}
@@ -192,11 +200,14 @@ input,textarea{font-family:inherit}
   </div>
   <div class="hdr-right">
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-    <div class="user-chip" id="userChip" style="display:none">
-      <div class="u-ava" id="uAva">ИП</div>
-      <span id="uName">—</span>
-    </div>
   </div>
+</div>
+
+<!-- Overlay сканера -->
+<div class="scan-overlay" id="scanOv">
+  <button class="scan-close" onclick="closeScanner()">✕</button>
+  <div id="qr-reader" style="width:100%;max-width:400px"></div>
+  <div class="scan-hint">Наведите камеру на бейдж</div>
 </div>
 
 <!-- ══ SCREEN: AUTH ══ -->
@@ -206,7 +217,9 @@ input,textarea{font-family:inherit}
     <div class="auth-tagline">Экосистема склада</div>
     <div class="auth-card">
       <div class="auth-card-title">Добро пожаловать</div>
-      <div class="auth-card-sub">Войдите через логин WMS</div>
+      <div class="auth-card-sub">Войдите через бейдж или логин WMS</div>
+      <button class="scan-btn" onclick="openScanner()"><span style="font-size:19px">📷</span>Сканировать бейдж</button>
+      <div class="div-or"><span>или</span></div>
       <input class="wms-inp" id="wmsInp" type="text" placeholder="Введите логин WMS" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="30">
       <button class="btn-primary" onclick="doAuth()">Войти</button>
     </div>
@@ -223,10 +236,9 @@ input,textarea{font-family:inherit}
       <div class="w-role" id="wRole">Кладовщик</div>
     </div>
   </div>
-  
+
   <div class="sec-lbl">Терминалы сбора данных</div>
   <div class="menu-grid" style="margin-bottom: 12px;">
-    <!-- ШИРОКАЯ ПЛИТКА ТСД -->
     <div class="mc wide" onclick="nav('s-tsd')">
       <div class="mc-icon ci-r" id="mc-tsd-icon">📱</div>
       <div class="mc-text">
@@ -255,7 +267,7 @@ input,textarea{font-family:inherit}
       <div class="mc-icon ci-g">📚</div>
       <div><div class="mc-title">Инструкции</div><div class="mc-desc">База знаний</div></div>
     </div>
-    
+
     <div class="mc wide" onclick="nav('s-leaders')">
       <div class="mc-icon ci-o">🏆</div>
       <div class="mc-text"><div class="mc-title">Лидеры квартала</div><div class="mc-desc">Лучшие сотрудники склада</div></div>
@@ -273,8 +285,7 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: TSD ══ -->
 <div class="screen" id="s-tsd">
   <div class="ph"><div class="ph-title">Журнал ТСД</div><div class="ph-sub">Регистрация терминалов сбора данных</div></div>
-  
-  <!-- СЧЕТЧИКИ ТСД (Моментальное обновление из SQLite) -->
+
   <div class="tsd-stats">
     <div class="tsd-stat"><div class="ts-num c-o" id="tsd-inuse">0</div><div class="ts-lbl">На руках</div></div>
     <div class="tsd-stat"><div class="ts-num c-g" id="tsd-free">0</div><div class="ts-lbl">Свободно</div></div>
@@ -322,7 +333,7 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: REVISOR ══ -->
 <div class="screen" id="s-revisor">
   <div class="ph"><div class="ph-title">Ревизорам</div><div class="ph-sub">Сообщить о пересорте</div></div>
-  
+
   <div class="rev-stats-card" id="rev-stats" style="display:none;">
     <div class="rs-title">📊 Статистика по обращениям:</div>
     <div class="rs-row"><span>📥 За 24 часа:</span> <b id="rs-24h">0</b></div>
@@ -334,7 +345,7 @@ input,textarea{font-family:inherit}
     <div class="rs-row"><span>❌ Отклонено:</span> <div><b class="c-r" id="rs-rj">0</b> <span class="rs-pct" id="rs-rj-pct">0%</span></div></div>
   </div>
 
-  <div class="px16 mb10"><button class="btn-primary" onclick="sendDataAndClose('revisor_start',{})">+ Новое обращение</button></div>
+  <div class="px16 mb10"><button class="btn-primary" onclick="sendDataAndClose('revisor_start',{})" id="rev-new-btn">+ Новое обращение</button></div>
   <div class="info-box">ℹ️ После нажатия бот в чате попросит описание и фото. Обращение уйдет напрямую в участок ревизоров.</div>
   <div class="safe-b"></div>
 </div>
@@ -357,8 +368,8 @@ input,textarea{font-family:inherit}
 <!-- ══ SCREEN: SUGGESTION ══ -->
 <div class="screen" id="s-suggestion">
   <div class="ph"><div class="ph-title">Журнал предложений</div><div class="ph-sub">Идеи по улучшению склада</div></div>
-  <div class="px16 mb14"><button class="btn-primary" onclick="sendDataAndClose('suggestion_start',{})">💡 + Новое предложение</button></div>
-  
+  <div class="px16 mb14"><button class="btn-primary" onclick="sendDataAndClose('suggestion_start',{})" id="sug-new-btn">💡 + Новое предложение</button></div>
+
   <div class="sec-lbl">Одобрено руководством</div>
   <div class="px16 mb14" id="pub-ideas-container">
     <div class="skeleton" style="height:56px"></div>
@@ -421,9 +432,7 @@ input,textarea{font-family:inherit}
 const tg = window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand();}
 
-// ❗ ВСТАВЬ СЮДА СВОИ ССЫЛКИ ❗
 const CSV_URLS = {
-  // ТСД: сюда ссылку на НОВЫЙ лист active_tsds
   tsd: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=113531983&single=true&output=csv",
   docs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=239967499&single=true&output=csv",
   leaders: "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-CNP1PtkjRzUktDCDL-Q7dxBaD69y2Hoh9sO2XqnUURJ1gs73D2P0mYdsNZrG8J3ffe_GyStApAq1/pub?gid=1039369964&single=true&output=csv"
@@ -441,6 +450,27 @@ function applyTheme(){
   if(tg){tg.setHeaderColor(dark?'#1C1C1E':'#FFFFFF');tg.setBackgroundColor(dark?'#000000':'#F2F2F7');}
 }
 function toggleTheme(){dark=!dark;applyTheme();tg?.HapticFeedback?.impactOccurred('light');}
+
+// ── SCANNER ──
+let qrScanner=null;
+function openScanner(){
+  document.getElementById('scanOv').classList.add('open');
+  if(!qrScanner) qrScanner=new Html5Qrcode('qr-reader');
+  qrScanner.start({facingMode:'environment'}, {fps: 10, qrbox: {width: 250, height: 100}},
+    decoded => {
+      closeScanner();
+      let res = decoded.trim().toUpperCase();
+      if(res.startsWith("20") && res.length > 5) res = res.substring(2);
+      document.getElementById('wmsInp').value = res;
+      setTimeout(doAuth, 200);
+    },
+    ()=>{}
+  ).catch(e=>{alert('Ошибка камеры. Выдайте разрешение браузеру.'); closeScanner();});
+}
+function closeScanner(){
+  document.getElementById('scanOv').classList.remove('open');
+  qrScanner?.stop().catch(()=>{});
+}
 
 function sendDataAndClose(action, payload){
   if(tg?.sendData) tg.sendData(JSON.stringify({action, ...payload}));
@@ -468,11 +498,10 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderDashboard(data) {
-  // ── ТСД ПЛИТКА НА ГЛАВНОЙ ──
   const tTitle = document.getElementById('mc-tsd-title');
   const tDesc = document.getElementById('mc-tsd-desc');
   const tIcon = document.getElementById('mc-tsd-icon');
-  
+
   if (data.tsd && data.tsd.m) {
     tTitle.textContent = 'Журнал ТСД';
     tDesc.innerHTML = `Мой терминал: <b>#${data.tsd.m}</b> • Не забудь сдать в конце смены`;
@@ -483,20 +512,18 @@ function renderDashboard(data) {
     tIcon.classList.replace('ci-g', 'ci-r');
   }
 
-  // СЧЕТЧИКИ ТСД (Моментальное обновление из SQLite)
   if (data.tsd) {
     let inUse = data.tsd.u || 0;
-    let total = data.tsd.t || 149;
+    let total = data.tsd.t || 168;
     document.getElementById('tsd-inuse').textContent = inUse;
     document.getElementById('tsd-free').textContent = total - inUse;
   }
 
-  // ── РЕВИЗОРЫ ──
   if (data.rev) {
     document.getElementById('rev-stats').style.display = 'block';
     const r = data.rev;
     const pct = (val, tot) => tot > 0 ? (val/tot*100).toFixed(1)+'%' : '0%';
-    
+
     document.getElementById('rs-24h').textContent = r.t24;
     document.getElementById('rs-30d').textContent = r.t30;
     document.getElementById('rs-day').textContent = r.d;
@@ -509,7 +536,6 @@ function renderDashboard(data) {
     document.getElementById('rs-rj-pct').textContent = '(' + pct(r.rj, r.t30) + ')';
   }
 
-  // ── ИДЕИ ──
   if (data.sug) {
     if (data.sug.m) renderMySuggestions(data.sug.m);
     if (data.sug.p) renderPublicSuggestions(data.sug.p);
@@ -550,8 +576,6 @@ function loginSuccess(user){
   document.getElementById('wName').textContent = user.name||'—';
   document.getElementById('wZone').textContent = user.zone||'—';
   document.getElementById('wRole').textContent = {'worker':'Кладовщик','senior':'Старший кладовщик','shift_manager':'Начальник смены','revisor':'Ревизор','admin':'Администратор'}[user.role]||user.role;
-  document.getElementById('uAva').textContent = user.initials;
-  document.getElementById('userChip').style.display = 'flex';
   document.getElementById('botNav').classList.add('show');
   if(['senior','shift_manager','admin'].includes(user.role)) document.getElementById('mc-shift').style.display='flex';
   nav('s-home');
@@ -560,6 +584,10 @@ function loginSuccess(user){
 
 let cur='s-auth', hist=[];
 const TITLES = {'s-tsd':'Журнал ТСД','s-tsd-take':'Взять ТСД','s-tsd-give':'Сдать ТСД','s-fault':'Неисправность','s-revisor':'Ревизорам','s-suggestion':'Предложения','s-docs':'Инструкции','s-leaders':'Лидеры квартала','s-shift':'Панель управления'};
+
+// Навешиваем обработчик BackButton
+if(tg) tg.BackButton.onClick(goBack);
+
 function nav(id){
   if(id===cur)return;
   document.getElementById(cur)?.classList.remove('active');
@@ -584,7 +612,7 @@ function updateHdr(){
   document.getElementById('hdr-logo').style.display = isRoot?'':'none';
   document.getElementById('hdr-title').style.display = isRoot?'none':'';
   document.getElementById('hdr-title').textContent=TITLES[cur]||'';
-  if(tg){isRoot?tg.BackButton.hide():(tg.BackButton.show(),tg.BackButton.onClick(goBack));}
+  if(tg){isRoot?tg.BackButton.hide():tg.BackButton.show();}
 }
 
 function sendTsdTake(){
@@ -606,7 +634,6 @@ function getActiveCond(g){ const a=document.querySelector('#'+g+' .ok, #'+g+' .w
 document.querySelectorAll('.cond-row').forEach(r=>{const f=r.querySelector('.cp'); if(f)f.classList.add('ok');});
 function selFault(el){ document.querySelectorAll('.ft').forEach(f=>f.classList.remove('sel')); el.classList.add('sel'); tg?.HapticFeedback?.selectionChanged(); }
 
-// ── TSD ──
 function loadActiveTSD() {
   const wrap = document.getElementById('tsd-list-container');
   wrap.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
@@ -615,23 +642,21 @@ function loadActiveTSD() {
     complete: function(results) {
       wrap.innerHTML = '<div class="list-hd">Сейчас на руках</div>';
       const active = results.data.filter(r => r.tsd_number);
-      
-      // Обновляем счетчики дополнительно из таблицы, чтобы учесть изменения других
-      let total = 149; // Из пула
+
+      let total = 168;
       document.getElementById('tsd-inuse').textContent = active.length;
       document.getElementById('tsd-free').textContent = total - active.length;
 
       if(active.length === 0) { wrap.innerHTML += '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text3)">Свободные терминалы ожидают на базе</div>'; return; }
       active.forEach(r => {
         let condText = (r.condition === 'ok') ? '<span class="pill p-g">Исправен</span>' : '<span class="pill p-r">Сбои</span>';
-        let time = (r.take_time.split(' ')[1] || r.take_time).substring(0, 5);
+        let time = r.take_time ? (r.take_time.split(' ')[1] || r.take_time).substring(0, 5) : '--:--';
         wrap.innerHTML += `<div class="li"><div class="tsd-n">#${r.tsd_number}</div><div class="tsd-i"><div class="tsd-nm">${r.short_name}</div><div class="tsd-zn">${r.zone}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text3)">${time}</div><div style="margin-top:3px">${condText}</div></div></div>`;
       });
     }
   });
 }
 
-// ── DOCS ──
 let allDocs =[];
 let curCategory = 'process'; 
 let curZone = 'Все';
@@ -685,7 +710,6 @@ function renderDocs() {
 }
 function openDoc(url){ if(!url) return; if(tg?.openLink) tg.openLink(url); else window.open(url,'_blank'); }
 
-// ── LEADERS ──
 let leadersLoaded = false;
 function loadLeaders() {
   const wrap = document.getElementById('leaders-list-container');
